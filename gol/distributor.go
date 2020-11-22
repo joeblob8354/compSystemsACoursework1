@@ -10,7 +10,19 @@ type distributorChannels struct {
 func distributor(p Params, c distributorChannels) {
 
 	// TODO: Create a 2D slice to store the world.
+	world := make([][]byte, p.ImageHeight)
+	for i := 0; i < p.ImageHeight; i++ {
+	    world[i] = make([]byte, p.ImageWidth)
+	}
 	// TODO: For all initially alive cells send a CellFlipped Event.
+	for currRow := 0; currRow < p.ImageHeight; currRow++ {
+	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
+	        currentCell := world[currRow][currColumn]
+	        if currentCell == 255 {
+	            Event.String(CellFlipped{CompletedTurns: 0})
+	        }
+	    }
+	}
 
 	turn := 0
 
