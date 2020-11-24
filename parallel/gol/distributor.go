@@ -20,16 +20,17 @@ type distributorChannels struct {
 func findNeighbour(cellColumn int, cellRow int, rowChange int, columnChange int, world [][]byte, p Params, amount int) int {
     newRow := cellRow + rowChange
     newColumn := cellColumn + columnChange
+
     //loops round screen if limits exceeded
-    if cellRow + rowChange < 0 {
+    if newRow < 0 {
         newRow = p.ImageHeight - 1
-    } else if cellRow + rowChange > p.ImageHeight - 1 {
+    } else if newRow > p.ImageHeight - 1 {
         newRow = 0
     }
     //loops round screen if limits exceeded
-    if cellColumn + columnChange < 0 {
+    if newColumn < 0 {
         newColumn = p.ImageWidth - 1
-    } else if cellColumn + columnChange > p.ImageWidth - 1 {
+    } else if newColumn > p.ImageWidth - 1 {
         newColumn = 0
     }
     if world[newRow][newColumn] == 255 {
@@ -50,38 +51,40 @@ func getNumberOfNeighbours(cellColumn int, cellRow int, world [][]byte, p Params
 }
 
 //returns an updated state sending cell flipped events when necessary
-func calculateNextState(p Params, world [][]byte, turn int, c distributorChannels) [][]byte {
+func calculateNextState(p Params, startY int, endY int, world [][]byte, turn int, c distributorChannels, out chan<- [][]byte) {
 	//creates a blank new state for us to populate
-	newState := make([][]byte, p.ImageHeight)
-	for i := 0; i < p.ImageHeight; i++ {
+	sectionHeight:= endY - startY
+	newState := make([][]byte, sectionHeight)
+	for i := 0; i < sectionHeight; i++ {
 	    newState[i] = make([]byte, p.ImageWidth)
 	}
 
-	for currRow := 0; currRow < p.ImageHeight; currRow++ {
+	for currRow := startY; currRow < endY; currRow++ {
 	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
 	        numberOfNeighbours := getNumberOfNeighbours(currColumn, currRow, world, p)
             currentCell := world[currRow][currColumn]
             if currentCell == 255 {
                 if numberOfNeighbours < 2 {
-                    newState[currRow][currColumn] = 0
+                    newState[currRow - startY][currColumn] = 0
                     c.events <- CellFlipped{CompletedTurns: turn, Cell: util.Cell{X: currRow, Y: currColumn}}
                 } else if numberOfNeighbours > 3 {
-                    newState[currRow][currColumn] = 0
+                    newState[currRow - startY][currColumn] = 0
                     c.events <- CellFlipped{CompletedTurns: turn, Cell: util.Cell{X: currRow, Y: currColumn}}
                 } else {
-                    newState[currRow][currColumn] = 255
+                    newState[currRow - startY][currColumn] = 255
                   }
             } else if currentCell == 0 {
                 if numberOfNeighbours == 3 {
-                    newState[currRow][currColumn] = 255
+                    newState[currRow - startY][currColumn] = 255
                     c.events <- CellFlipped{CompletedTurns: turn, Cell: util.Cell{X: currRow, Y: currColumn}}
                 } else {
-                    newState[currRow][currColumn] = 0
+                    newState[currRow - startY][currColumn] = 0
                   }
               }
 	    }
 	}
-    return newState
+    //send section channel
+    out <- newState
 }
 
 //returns a array of alive cells in the current state
@@ -112,9 +115,9 @@ func distributor(p Params, c distributorChannels) {
 
     //reads in bytes 1 at a time from the ioInput channel and populates the world
 	for currRow := 0; currRow < p.ImageHeight; currRow++ {
-    	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-    	        newWorld[currRow][currColumn] = <- c.ioInput
-    	    }
+        for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
+    	    newWorld[currRow][currColumn] = <- c.ioInput
+    	}
     }
 
 	turn := 0
@@ -131,11 +134,34 @@ func distributor(p Params, c distributorChannels) {
     //changes state to executing
 	c.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
-	//Execute all turns of the Game of Life.
-	for turn = 0; turn < p.Turns; turn++ {
-	    newWorld = calculateNextState(p, newWorld, turn, c)
-	    c.events <- TurnComplete{CompletedTurns: turn}
-	}
+    numberOfSections := p.Threads
+    heightOfSection := p.ImageHeight/p.Threads
+
+    chanSlice := make([]chan [][]byte, numberOfSections)
+        for i := range chanSlice {
+            chanSlice[i] = make(chan [][]byte)
+    }
+
+    //Execute all turns of the Game of Life.
+    for turn = 0; turn < p.Turns; turn++ {
+        if numberOfSections == 1 {
+            go calculateNextState(p, 0, p.ImageHeight, newWorld, turn, c, chanSlice[0])
+        } else {
+            for section := 0; section < numberOfSections - 1; section++ {
+                go calculateNextState(p, 0 + section*heightOfSection, heightOfSection + section*heightOfSection, newWorld, turn, c, chanSlice[section])
+            }
+            go calculateNextState(p, (numberOfSections - 1)*heightOfSection, p.ImageHeight, newWorld, turn, c, chanSlice[numberOfSections -1])
+        }
+
+        newWorld = nil
+
+        for section := 0; section < numberOfSections; section++ {
+            part := <- chanSlice[section]
+            newWorld = append(newWorld, part...)
+        }
+
+        c.events <- TurnComplete{CompletedTurns: turn}
+    }
 
     //send array of alive cells for testing
     aliveCells := calculateAliveCells(p, newWorld)
