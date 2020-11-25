@@ -16,7 +16,7 @@ type distributorChannels struct {
 	ioOutput   chan<- uint8
 }
 
-//finds a cells neighbours and increments amount if teh neighbour is alive
+//finds a cells neighbours and increments amount if the neighbour is alive
 func findNeighbour(cellColumn int, cellRow int, rowChange int, columnChange int, world [][]byte, p Params, amount int) int {
     newRow := cellRow + rowChange
     newColumn := cellColumn + columnChange
@@ -184,7 +184,7 @@ func distributor(p Params, c distributorChannels) {
 	for currRow := 0; currRow < p.ImageHeight; currRow++ {
         for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
         	c.ioOutput <- newWorld[currRow][currColumn]
-        	}
+        }
     }
 
     // Make sure that the Io has finished any output before exiting.
