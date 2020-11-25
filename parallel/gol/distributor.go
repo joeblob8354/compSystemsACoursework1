@@ -119,7 +119,7 @@ func distributor(p Params, c distributorChannels) {
     	    newWorld[currRow][currColumn] = <- c.ioInput
     	}
     }
-
+    //sets start turn to 0.
 	turn := 0
 
 	//For all initially alive cells send a CellFlipped Event.
@@ -134,9 +134,12 @@ func distributor(p Params, c distributorChannels) {
     //changes state to executing
 	c.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
+    //sets number of sections == to number of threads (workers).
     numberOfSections := p.Threads
+    //sets the height of each section to be an equal proportion of total height.
     heightOfSection := p.ImageHeight/p.Threads
 
+    //creates a slice of channels that will be used to receive incoming completed sections from workers.
     chanSlice := make([]chan [][]byte, numberOfSections)
         for i := range chanSlice {
             chanSlice[i] = make(chan [][]byte)
@@ -144,22 +147,27 @@ func distributor(p Params, c distributorChannels) {
 
     //Execute all turns of the Game of Life.
     for turn = 0; turn < p.Turns; turn++ {
+        //if numberOfSections == 1 start just 1 worker routine to handle the entire world
         if numberOfSections == 1 {
             go calculateNextState(p, 0, p.ImageHeight, newWorld, turn, c, chanSlice[0])
+        // if numberOfSections > 1 then create a worker go routine for each section and allocate it a section of the world to work on.
         } else {
             for section := 0; section < numberOfSections - 1; section++ {
                 go calculateNextState(p, 0 + section*heightOfSection, heightOfSection + section*heightOfSection, newWorld, turn, c, chanSlice[section])
             }
+            //this last section is separate to handle cases where number of workers is odd as a row can be left out otherwise due to rounding.
             go calculateNextState(p, (numberOfSections - 1)*heightOfSection, p.ImageHeight, newWorld, turn, c, chanSlice[numberOfSections -1])
         }
 
+        //reset world state
         newWorld = nil
 
+        //receives incoming sections from workers and appends them in order to the newWorld state.
         for section := 0; section < numberOfSections; section++ {
             part := <- chanSlice[section]
             newWorld = append(newWorld, part...)
         }
-
+        //sends an event to say the turn is complete
         c.events <- TurnComplete{CompletedTurns: turn}
     }
 
@@ -171,12 +179,14 @@ func distributor(p Params, c distributorChannels) {
 	c.ioCommand <- ioOutput
 	//send the filename to the writePgmImage() function.
 	c.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth))
+
 	//Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
 	for currRow := 0; currRow < p.ImageHeight; currRow++ {
         for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
         	c.ioOutput <- newWorld[currRow][currColumn]
         	}
     }
+
     // Make sure that the Io has finished any output before exiting.
 	c.ioCommand <- ioCheckIdle
 	<-c.ioIdle
