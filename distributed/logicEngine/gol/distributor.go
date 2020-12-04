@@ -85,11 +85,13 @@ func checkNumberOfAliveCells(p Params, world [][]byte) int {
 	return numberOfAliveCells
 }
 
-func ticker (tk time.Ticker, p Params, world [][]byte) {
+func ticker (tk time.Ticker, p Params, world *[][]byte) {
 
+    var theWorld [][]byte
     numberOfAliveCells := 0
     for range tk.C{
-        numberOfAliveCells = checkNumberOfAliveCells(p, world)
+        theWorld = *world
+        numberOfAliveCells = checkNumberOfAliveCells(p, theWorld)
         fmt.Println(numberOfAliveCells)
     }
 }
@@ -110,7 +112,8 @@ func Distributor(p Params, world [][]byte) [][]byte {
 
     tk := time.NewTicker(duration)
 
-    go ticker(*tk, p, newWorld)
+    worldPointer := &newWorld
+    go ticker(*tk, p, worldPointer)
 
 	//Execute all turns of the Game of Life.
     for turn = 0; turn < p.Turns; turn++ {
