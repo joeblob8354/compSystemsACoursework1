@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"uk.ac.bris.cs/gameoflife/gol"
 	"uk.ac.bris.cs/gameoflife/sdl"
+	//"net/rpc"
 )
 
 // main is the function called when starting Game of Life with 'go run .'
@@ -44,8 +45,8 @@ func main() {
 	fmt.Println("Height:", params.ImageHeight)
 
 	keyPresses := make(chan rune, 10)
-	events := make(chan gol.Event, 1000)
+	events := make(chan gol.Event)
 
-	gol.Run(params, events, keyPresses)
+    gol.Run(params, events, keyPresses)
 	sdl.Start(params, events, keyPresses)
 }

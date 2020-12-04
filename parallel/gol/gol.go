@@ -14,9 +14,9 @@ func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
     //creates all necessary channels
 	ioCommand := make(chan ioCommand)
 	ioIdle := make(chan bool)
-	ioFilename := make(chan string, 10000)
-	ioOutput := make(chan uint8, 10000)
-	ioInput := make(chan uint8, 10000)
+	ioFilename := make(chan string)
+	ioOutput := make(chan uint8)
+	ioInput := make(chan uint8)
 
 	distributorChannels := distributorChannels{
 		events,
