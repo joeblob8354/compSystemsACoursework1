@@ -94,7 +94,7 @@ func engine(p Params, d distributorChannels) {
     //send command to io to let make it execute the writePgmImage() function.
     d.ioCommand <- 0
     //send the filename to the writePgmImage() function.
-    d.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth))
+    d.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(turn))
 
     //Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
     for currRow := 0; currRow < p.ImageHeight; currRow++ {
