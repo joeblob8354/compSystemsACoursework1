@@ -20,9 +20,7 @@ type Engine struct {}
 // Run starts the processing of Game of Life. It should initialise channels and goroutines.
 func (e *Engine) Run(data Data, reply *[][]byte) error {
 
-
-	newWorld := gol.Distributor(data.TheParams, data.World)
-    *reply = newWorld
+    *reply = gol.CalculateNextState(data.TheParams, data.World)
 
     return nil
 }

@@ -2,9 +2,8 @@ package gol
 
 import (
     //"uk.ac.bris.cs/gameoflife/util"
-    "fmt"
+    //"fmt"
     //"strconv"
-    "time"
 )
 
 //finds a cells neighbours and increments amount if teh neighbour is alive
@@ -41,7 +40,7 @@ func getNumberOfNeighbours(cellColumn int, cellRow int, world [][]byte, p Params
 }
 
 //returns an updated state sending cell flipped events when necessary
-func calculateNextState(p Params, world [][]byte) [][]byte {
+func CalculateNextState(p Params, world [][]byte) [][]byte {
 	//creates a blank new state for us to populate
 	newState := make([][]byte, p.ImageHeight)
 	for i := 0; i < p.ImageHeight; i++ {
@@ -70,55 +69,4 @@ func calculateNextState(p Params, world [][]byte) [][]byte {
 	    }
 	}
     return newState
-}
-
-func checkNumberOfAliveCells(p Params, world [][]byte) int {
-
-    numberOfAliveCells := 0
-    for currRow := 0; currRow < p.ImageHeight; currRow++ {
-	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-	        if world[currRow][currColumn] == 255 {
-	            numberOfAliveCells++
-	        }
-	    }
-	}
-	return numberOfAliveCells
-}
-
-func ticker (tk time.Ticker, p Params, world *[][]byte) {
-
-    var theWorld [][]byte
-    numberOfAliveCells := 0
-    for range tk.C{
-        theWorld = *world
-        numberOfAliveCells = checkNumberOfAliveCells(p, theWorld)
-        fmt.Println(numberOfAliveCells)
-    }
-}
-
-// distributor divides the work between workers and interacts with other goroutines.
-func Distributor(p Params, world [][]byte) [][]byte {
-
-    //Creates a 2D slice to store the world.
-    newWorld := make([][]byte, p.ImageHeight)
-    for i := 0; i < p.ImageHeight; i++ {
-        newWorld[i] = make([]byte, p.ImageWidth)
-    }
-	turn := 0
-
-    newWorld = world
-
-    duration := time.Duration(2) * time.Second
-
-    tk := time.NewTicker(duration)
-
-    worldPointer := &newWorld
-    go ticker(*tk, p, worldPointer)
-
-	//Execute all turns of the Game of Life.
-    for turn = 0; turn < p.Turns; turn++ {
-	    newWorld = calculateNextState(p, newWorld)
-	}
-    tk.Stop()
-	return newWorld
 }

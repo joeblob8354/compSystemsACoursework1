@@ -6,6 +6,7 @@ import (
     "log"
     "strconv"
     //"fmt"
+    "time"
 )
 
 // Params provides the details of how to run the Game of Life and which image to load.
@@ -62,29 +63,32 @@ func engine(p Params, d distributorChannels) {
         }
     }
 
-    var data Data
-
-    data.TheParams = p
-    data.World = newWorld
-
-    reply := make([][]byte, p.ImageHeight)
-    for i := 0; i < p.ImageHeight; i++ {
-        reply[i] = make([]byte, p.ImageWidth)
-    }
-
     //connect to server or return an error
-    serverAddress := "127.0.0.1:8030"
+    serverAddress := "192.168.0.31:8030"
     client, err := rpc.Dial("tcp", serverAddress)
 
     if err != nil {
         log.Fatal("connection error", err)
     }
 
-    //call the Run method on the server and send it the data
-    client.Call("Engine.Run", data, &reply)
+    var data Data
+    data.World = newWorld
+    data.TheParams = p
+    turn := 0
+
+    var reply [][]byte
+    tk := time.NewTicker(time.Second*1)
+    go ticker(tk, &data.World, &turn, d, p)
+    //call the Run method on the server and send it the world
+    for turn = 0; turn < p.Turns; turn++ {
+        client.Call("Engine.Run", data, &reply)
+        data.World = reply
+    }
+
+    tk.Stop()
 
     //send array of alive cells for testing
-    aliveCells := calculateAliveCells(p, reply)
+    aliveCells := calculateAliveCells(p, data.World)
     d.events <- FinalTurnComplete{CompletedTurns: p.Turns, Alive: aliveCells}
 
     //send command to io to let make it execute the writePgmImage() function.
@@ -95,7 +99,7 @@ func engine(p Params, d distributorChannels) {
     //Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
     for currRow := 0; currRow < p.ImageHeight; currRow++ {
         for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-            d.ioOutput <- reply[currRow][currColumn]
+            d.ioOutput <- data.World[currRow][currColumn]
         }
     }
 
@@ -104,6 +108,25 @@ func engine(p Params, d distributorChannels) {
  	<-d.ioIdle
 
     close(d.events)
+}
+
+func ticker(tk *time.Ticker, world *[][]byte, turn *int, d distributorChannels, p Params) {
+    for range tk.C{
+        d.events <- AliveCellsCount{CompletedTurns: *turn, CellsCount: checkNumberOfAliveCells(p, *world)}
+    }
+}
+
+func checkNumberOfAliveCells(p Params, world [][]byte) int {
+
+    numberOfAliveCells := 0
+    for currRow := 0; currRow < p.ImageHeight; currRow++ {
+	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
+	        if world[currRow][currColumn] == 255 {
+	            numberOfAliveCells++
+	        }
+	    }
+	}
+	return numberOfAliveCells
 }
 
 // Connect to server and run the Run method on there.
