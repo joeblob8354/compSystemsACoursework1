@@ -64,7 +64,7 @@ func engine(p Params, d distributorChannels) {
     }
 
     //connect to server or return an error
-    serverAddress := "192.168.0.31:8030"
+    serverAddress := "18.232.162.211:8030"
     client, err := rpc.Dial("tcp", serverAddress)
 
     if err != nil {
