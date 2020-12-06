@@ -91,7 +91,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         data.World = reply
         key := <- k
         if key == 's' {
-            outputPgmFile(d, p, data.World)
+            outputPgmFile(d, p, data.World, turn)
         }
     }
 
@@ -103,7 +103,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     d.events <- FinalTurnComplete{CompletedTurns: p.Turns, Alive: aliveCells}
 
     //outputs pgm file
-    outputPgmFile(d, p, data.World)
+    outputPgmFile(d, p, data.World, turn)
 
     // Make sure that the Io has finished any output before exiting.
  	d.ioCommand <- ioCheckIdle
@@ -135,7 +135,7 @@ func checkNumberOfAliveCells(p Params, world [][]byte) int {
 }
 
 //Outputs a program file of the world state.
-func outputPgmFile (d distributorChannels, p Params, world [][]byte) {
+func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) {
 
     //send command to io to let make it execute the writePgmImage() function.
     d.ioCommand <- 0
