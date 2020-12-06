@@ -72,6 +72,8 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     if err != nil {
         log.Fatal("connection error", err)
+        serverAddress = "localhost:8030"
+        client, err = rpc.Dial("tcp", serverAddress)
     }
 
     var turn int
