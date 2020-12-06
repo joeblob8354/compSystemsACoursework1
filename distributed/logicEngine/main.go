@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	//"fmt"
+	"fmt"
 	"runtime"
 	"uk.ac.bris.cs/gameoflife/gol"
 	//"uk.ac.bris.cs/gameoflife/sdl"
@@ -41,6 +41,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     }
 
     numberOfNodes := data.TheParams.Threads
+    fmt.Println(numberOfNodes)
 
     if numberOfNodes == 1 {
         globalWorld = gol.CalculateNextState(data.TheParams, 0, data.TheParams.ImageHeight, data.World)
