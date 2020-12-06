@@ -53,7 +53,7 @@ func getNumberOfNeighbours(cellColumn int, cellRow int, world [][]byte, p Params
 //returns an updated state sending cell flipped events when necessary
 func calculateNextState(p Params, startY int, endY int, world [][]byte, turn int, c distributorChannels, out chan<- [][]byte) {
 	//creates a blank new state for us to populate
-	sectionHeight:= endY - startY
+	sectionHeight := endY - startY
 	newState := make([][]byte, sectionHeight)
 	for i := 0; i < sectionHeight; i++ {
 	    newState[i] = make([]byte, p.ImageWidth)

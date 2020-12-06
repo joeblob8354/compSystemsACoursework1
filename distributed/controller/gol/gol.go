@@ -66,12 +66,17 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         }
     }
 
+    //sets number of sections == to number of threads (workers).
+    numberOfNodes := p.Threads
+    //sets the height of each section to be an equal proportion of total height.
+    heightOfSection := p.ImageHeight/numberOfNodes
+
     //connect to server or return an error
     serverAddress := "34.228.239.127:8030"
-    client, err := rpc.Dial("tcp", serverAddress)
+    client, err := rpc.Dial("tcp", serverAddress1)
 
     if err != nil {
-        log.Fatal("connection error", err)
+        log.Fatal("Failed to connect to ", err)
     }
 
     var turn int
@@ -103,10 +108,10 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
-    //call the Run method on the server and send it the world
+    //For each turn, call the Run method on the server and send it the world
     for turn = turnReply; turn < p.Turns; turn++ {
         data.Turn = turn
-        client.Call("Engine.Run", data, &reply)
+        client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
         var key rune
         select {

@@ -40,30 +40,32 @@ func getNumberOfNeighbours(cellColumn int, cellRow int, world [][]byte, p Params
 }
 
 //returns an updated state sending cell flipped events when necessary
-func CalculateNextState(p Params, world [][]byte) [][]byte {
+func CalculateNextState(p Params, startY int, endY int, world [][]byte) [][]byte {
+
+	sectionHeight := endY - startY
 	//creates a blank new state for us to populate
-	newState := make([][]byte, p.ImageHeight)
-	for i := 0; i < p.ImageHeight; i++ {
+	newState := make([][]byte, sectionHeight)
+	for i := 0; i < sectionHeight; i++ {
 	    newState[i] = make([]byte, p.ImageWidth)
 	}
 
-	for currRow := 0; currRow < p.ImageHeight; currRow++ {
+	for currRow := startY; currRow < endY; currRow++ {
 	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
 	        numberOfNeighbours := getNumberOfNeighbours(currColumn, currRow, world, p)
             currentCell := world[currRow][currColumn]
             if currentCell == 255 {
                 if numberOfNeighbours < 2 {
-                    newState[currRow][currColumn] = 0
+                    newState[currRow - startY][currColumn] = 0
                 } else if numberOfNeighbours > 3 {
-                    newState[currRow][currColumn] = 0
+                    newState[currRow - startY][currColumn] = 0
                 } else {
-                    newState[currRow][currColumn] = 255
+                    newState[currRow - startY][currColumn] = 255
                   }
             } else if currentCell == 0 {
                 if numberOfNeighbours == 3 {
-                    newState[currRow][currColumn] = 255
+                    newState[currRow - startY][currColumn] = 255
                 } else {
-                    newState[currRow][currColumn] = 0
+                    newState[currRow - startY][currColumn] = 0
                   }
               }
 	    }
