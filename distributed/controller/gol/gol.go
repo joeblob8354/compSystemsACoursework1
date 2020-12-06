@@ -7,6 +7,7 @@ import (
     "strconv"
     //"fmt"
     "time"
+    "os"
 )
 
 // Params provides the details of how to run the Game of Life and which image to load.
@@ -104,6 +105,9 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
                     tk = time.NewTicker(time.Second*1)
                     go ticker(tk, &data.World, &turn, d, p)
+                } else if key == 'q' {
+                    d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+                    os.Exit(0)
                 }
             default:
         }
