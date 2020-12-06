@@ -44,7 +44,7 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 	return aliveCells
 }
 
-func engine(p Params, d distributorChannels, k chan<- rune) {
+func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //Creates a 2D slice to store the world.
     newWorld := make([][]byte, p.ImageHeight)
