@@ -103,6 +103,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //call the Run method on the server and send it the world
     for turn = turnReply; turn < p.Turns; turn++ {
+        d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
         data.Turn = turn
         client.Call("Engine.Run", data, &reply)
         data.World = reply
