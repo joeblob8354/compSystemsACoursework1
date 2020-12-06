@@ -43,7 +43,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     numberOfNodes := data.TheParams.Threads
 
     if numberOfNodes == 1 {
-        globalWorld = gol.CalculateNextState(p, 0, data.TheParams.ImageHeight, data.World)
+        globalWorld = gol.CalculateNextState(data.TheParams, 0, data.TheParams.ImageHeight, data.World)
     } else {
         heightOfSection := data.TheParams.ImageHeight/numberOfNodes
 
