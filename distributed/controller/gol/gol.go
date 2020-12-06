@@ -67,7 +67,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     }
 
     //connect to server or return an error
-    serverAddress := "172.31.45.13:8030"
+    serverAddress := "34.228.239.127:8030"
     client, err := rpc.Dial("tcp", serverAddress)
 
     if err != nil {
