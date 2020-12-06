@@ -21,6 +21,7 @@ type Params struct {
 type Data struct {
     TheParams Params
     World     [][]byte
+    Turn      int
 }
 
 type distributorChannels struct {
@@ -73,11 +74,25 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         log.Fatal("connection error", err)
     }
 
+    var turn int
+
+    var x int
+    var turnReply int
+    client.Call("Engine.CheckTurnNumber", x, &turnReply)
+    turn = turnReply
+
     //create var of type Data to store necessary data to send to logic engine.
     var data Data
-    data.World = newWorld
+    if turn == 0 {
+        data.World = newWorld
+    }
     data.TheParams = p
-    turn := 0
+
+    worldReply := newWorld
+    if data.World == nil {
+        client.Call("Engine.GetWorld", x, &worldReply)
+        data.World = worldReply
+    }
 
     ///create a reply variable to receive the updated world from the logic engine
     var reply [][]byte
@@ -87,7 +102,8 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     go ticker(tk, &data.World, &turn, d, p)
 
     //call the Run method on the server and send it the world
-    for turn = 0; turn < p.Turns; turn++ {
+    for turn = turnReply; turn < p.Turns; turn++ {
+        data.Turn = turn
         client.Call("Engine.Run", data, &reply)
         data.World = reply
         var key rune
@@ -140,7 +156,6 @@ func ticker(tk *time.Ticker, world *[][]byte, turn *int, d distributorChannels, 
 
 //returns number of alive cells in a world state
 func checkNumberOfAliveCells(p Params, world [][]byte) int {
-
     numberOfAliveCells := 0
     for currRow := 0; currRow < p.ImageHeight; currRow++ {
 	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
