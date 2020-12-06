@@ -66,11 +66,6 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         }
     }
 
-    //sets number of sections == to number of threads (workers).
-    numberOfNodes := p.Threads
-    //sets the height of each section to be an equal proportion of total height.
-    heightOfSection := p.ImageHeight/numberOfNodes
-
     //connect to server or return an error
     serverAddress := "34.228.239.127:8030"
     client, err := rpc.Dial("tcp", serverAddress)
