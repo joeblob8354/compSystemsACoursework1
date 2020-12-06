@@ -89,8 +89,11 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     for turn = 0; turn < p.Turns; turn++ {
         client.Call("Engine.Run", data, &reply)
         data.World = reply
-        if <- k == 's' {
-            outputPgmFile(d, p, data.World, turn)
+        select {
+            case key := <- k:
+                if key == 's' {
+                    outputPgmFile(d, p, data.World, turn)
+                }
         }
     }
 
