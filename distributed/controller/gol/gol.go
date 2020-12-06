@@ -102,7 +102,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                         key = <- k
                     }
                     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
-                    tk := time.NewTicker(time.Second*1)
+                    tk = time.NewTicker(time.Second*1)
                     go ticker(tk, &data.World, &turn, d, p)
                 }
             default:
