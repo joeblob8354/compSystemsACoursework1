@@ -44,7 +44,7 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 	return aliveCells
 }
 
-func engine(p Params, d distributorChannels, k keyPresses) {
+func engine(p Params, d distributorChannels, k chan<- rune) {
 
     //Creates a 2D slice to store the world.
     newWorld := make([][]byte, p.ImageHeight)
@@ -89,7 +89,7 @@ func engine(p Params, d distributorChannels, k keyPresses) {
     for turn = 0; turn < p.Turns; turn++ {
         client.Call("Engine.Run", data, &reply)
         data.World = reply
-        key := <- keyPresses
+        key := <- k
         if key == 's' {
             outputPgmFile(d, p, data.World)
         }
