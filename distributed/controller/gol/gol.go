@@ -101,7 +101,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     tk := time.NewTicker(time.Second*1)
     go ticker(tk, &data.World, &turn, d, p)
 
-    d.events <- StateChange{CompletedTurns: turn, NewState: Paused}
+    d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
     //call the Run method on the server and send it the world
     for turn = turnReply; turn < p.Turns; turn++ {
