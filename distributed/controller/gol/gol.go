@@ -5,7 +5,7 @@ import (
     "net/rpc"
     "log"
     "strconv"
-    "fmt"
+    //"fmt"
     "time"
 )
 
@@ -96,12 +96,13 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     outputPgmFile(d, p, data.World, turn)
                 } else if key == 'p' {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Paused}
+                    tk.Stop()
                     key = <- k
                     for key != 'p' {
                         key = <- k
                     }
                     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
-                    fmt.Println("Continuing")
+                    go ticker(tk, &data.World, &turn, d, p)
                 }
             default:
         }
