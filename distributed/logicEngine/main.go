@@ -39,34 +39,39 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     if data.World == nil {
         data.World = globalWorld
     }
-    //split
+
     numberOfNodes := data.TheParams.Threads
-    heightOfSection := data.TheParams.ImageHeight/numberOfNodes
 
-    var workerData WorkerData
-    workerData.TheParams = data.TheParams
-    workerData.World = data.World
-    workerData.StartHeight = 0
-    workerData.EndHeight = heightOfSection
+    if numberOfNodes == 1 {
+        globalWorld = gol.CalculateNextState(p, 0, data.TheParams.ImageHeight, data.World)
+    } else {
+        heightOfSection := data.TheParams.ImageHeight/numberOfNodes
 
-    nodes := []*rpc.Client{}
-    var err error
-    replies := []*[][]byte{}
-    for n := 0; n < numberOfNodes; n++ {
-        nodes[n], err = rpc.Dial("tcp", nodeAddresses[n])
-        if err != nil {
-            log.Fatal("Failed to connect to node ", n, " ", err)
+        var workerData WorkerData
+        workerData.TheParams = data.TheParams
+        workerData.World = data.World
+        workerData.StartHeight = 0
+        workerData.EndHeight = heightOfSection
+
+        nodes := []*rpc.Client{}
+        var err error
+        replies := []*[][]byte{}
+        for n := 0; n < numberOfNodes; n++ {
+            nodes[n], err = rpc.Dial("tcp", nodeAddresses[n])
+            if err != nil {
+                log.Fatal("Failed to connect to node ", n, " ", err)
+            }
+            nodes[n].Call("Engine.RunWorker", workerData, &replies[n])
+            workerData.StartHeight = workerData.StartHeight + heightOfSection
+            workerData.EndHeight = workerData.EndHeight + heightOfSection
         }
-        nodes[n].Call("Engine.RunWorker", workerData, &replies[n])
-        workerData.StartHeight = workerData.StartHeight + heightOfSection
-        workerData.EndHeight = workerData.EndHeight + heightOfSection
+
+        for node := 0; node < numberOfNodes; node++ {
+            part := *replies[node]
+            globalWorld = append(globalWorld, part...)
+        }
     }
 
-    for node := 0; node < numberOfNodes; node++ {
-        part := *replies[node]
-        globalWorld = append(globalWorld, part...)
-    }
-    //end split
     globalTurn = data.Turn
     *reply = globalWorld
     if globalTurn == data.TheParams.Turns - 1 {
