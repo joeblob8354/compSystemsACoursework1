@@ -103,6 +103,8 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     } else {
         if turn != 0{
             fmt.Println("---Warning--- Unfinished board found with differing parameters, starting processing of new board with new parameters...")
+            var boolReply bool
+            client.Call*"Engine.ResetGlobals", x, &boolReply)
         }
         turn = 0
         data.World = newWorld
