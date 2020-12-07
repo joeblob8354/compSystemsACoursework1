@@ -45,7 +45,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     }
 
     numberOfNodes := data.TheParams.Threads
-    fmt.Println(numberOfNodes)
+    //fmt.Println(numberOfNodes)
 
     if numberOfNodes == 1 {
         globalWorld = gol.CalculateNextState(data.TheParams, 0, data.TheParams.ImageHeight, data.World)
@@ -94,6 +94,7 @@ func (e *Engine)RunWorker (data WorkerData, reply *[][]byte) error {
 
 func (e *Engine) CheckTurnNumber(x int, turnReply *int) error {
 
+    fmt.Println("Params reset")
     *turnReply = globalTurn
     return nil
 }
