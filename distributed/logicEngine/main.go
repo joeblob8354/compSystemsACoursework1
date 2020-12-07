@@ -115,6 +115,12 @@ func (e *Engine) CheckParams(p gol.Params, reply *bool) error {
     return nil
 }
 
+func (e *Engine) ResetGlobals(x int, reply *bool) error {
+
+    globalTurn, globalWorld = 0, nil
+    return nil
+}
+
 // main is the function called when starting Game of Life with 'go run .'
 func main() {
 	runtime.LockOSThread()
