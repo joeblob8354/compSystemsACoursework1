@@ -106,7 +106,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         }
         var boolReply bool
         var z int
-        client.Call*"Engine.ResetGlobals", z, &boolReply)
+        client.Call("Engine.ResetGlobals", z, &boolReply)
         turn = 0
         data.World = newWorld
     }
