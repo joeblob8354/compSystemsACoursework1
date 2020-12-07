@@ -98,11 +98,11 @@ func (event AliveCellsCount) GetCompletedTurns() int {
 	return event.CompletedTurns
 }
 
-func (event ImageOutputComplete) String() string {
+func (event ImageOutputComplete) String() string { 
 	return fmt.Sprintf("File %v output complete", event.Filename)
 }
 
-func (event ImageOutputComplete) GetCompletedTurns() int {
+func (event ImageOutputComplete) GetCompletedTurns() int { 
 	return event.CompletedTurns
 }
 

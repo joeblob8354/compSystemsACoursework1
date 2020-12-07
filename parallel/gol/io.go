@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"uk.ac.bris.cs/gameoflife/util"
+//	"image"
 )
 
 type ioChannels struct {
@@ -38,14 +39,16 @@ const (
 )
 
 // writePgmImage receives an array of bytes and writes it to a pgm file.
-func (io *ioState) writePgmImage() {
+func (io *ioState) writePgmImage() { 
 	_ = os.Mkdir("out", os.ModePerm)
 
+	//open a file, make sure it has no errors
 	filename := <-io.channels.filename
 	file, ioError := os.Create("out/" + filename + ".pgm")
 	util.Check(ioError)
 	defer file.Close()
-
+	 
+	//write PGM header
 	_, _ = file.WriteString("P5\n")
 	//_, _ = file.WriteString("# PGM file writer by pnmmodules (https://github.com/owainkenwayucl/pnmmodules).\n")
 	_, _ = file.WriteString(strconv.Itoa(io.params.ImageWidth))
@@ -60,6 +63,7 @@ func (io *ioState) writePgmImage() {
 		world[i] = make([]byte, io.params.ImageWidth)
 	}
 
+	//fills world with a copy of the evolved one from distributor
 	for y := 0; y < io.params.ImageHeight; y++ {
 		for x := 0; x < io.params.ImageWidth; x++ {
 			val := <-io.channels.output
@@ -70,17 +74,21 @@ func (io *ioState) writePgmImage() {
 		}
 	}
 
+	//is this writing out the file? do we need to add anything more?
 	for y := 0; y < io.params.ImageHeight; y++ {
 		for x := 0; x < io.params.ImageWidth; x++ {
 			_, ioError = file.Write([]byte{world[y][x]})
 			util.Check(ioError)
 		}
 	}
-
+	
+	
 	ioError = file.Sync()
 	util.Check(ioError)
 
 	fmt.Println("File", filename, "output done!")
+	//should we send an ImageOutputComplete event?
+
 }
 
 // readPgmImage opens a pgm file and sends its data as an array of bytes.
@@ -117,6 +125,7 @@ func (io *ioState) readPgmImage() {
 	}
 
 	fmt.Println("File", filename, "input done!")
+	
 }
 
 // startIo should be the entrypoint of the io goroutine.
@@ -127,7 +136,7 @@ func startIo(p Params, c ioChannels) {
 	}
 
 	for {
-		select {
+		select { 
 		case command := <-io.channels.command:
 			switch command {
 			case ioInput:
