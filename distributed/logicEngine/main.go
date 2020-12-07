@@ -109,7 +109,9 @@ func (e *Engine) CheckParams(p gol.Params, reply *bool) error {
 
     if p == globalParams {
         *reply = true
-    } else *reply = false
+    } else {
+        *reply = false
+    }
     return nil
 }
 
