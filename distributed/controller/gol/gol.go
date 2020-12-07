@@ -102,7 +102,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         }
     } else {
         if turn != 0{
-            fmt.Println("---Warning--- Unfinished board found with differing parameters, starting processing of new board with new parameters...")
+            fmt.Println("Warning: Unfinished board found with differing parameters, starting processing of new board with new parameters...")
         }
         var boolReply bool
         var z int
