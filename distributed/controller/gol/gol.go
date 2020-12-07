@@ -74,25 +74,41 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         log.Fatal("Failed to connect to ", err)
     }
 
-    var turn int
+    var paramsReply bool
+    client.Call("Engine.CheckParams", p, &paramsReply)
 
+    //create var of type Data to store necessary data to send to logic engine.
+    var data Data
+
+    var turn int
     var x int
     var turnReply int
     client.Call("Engine.CheckTurnNumber", x, &turnReply)
     turn = turnReply
 
-    //create var of type Data to store necessary data to send to logic engine.
-    var data Data
-    if turn == 0 {
+    if paramsReply == true {
+        if turn != 0 {
+            fmt.Println("Unfinished board found with matching parameters, continuing processing unfinished board...")
+        }
+
+        if turn == 0 {
+            data.World = newWorld
+        }
+
+        worldReply := newWorld
+        if data.World == nil {
+            client.Call("Engine.GetWorld", x, &worldReply)
+            data.World = worldReply
+        }
+    } else {
+        if turn != 0{
+            fmt.Println("---Warning--- Unfinished board found with differing parameters, starting processing of new board with new parameters...")
+        }
+        turn = 0
         data.World = newWorld
     }
-    data.TheParams = p
 
-    worldReply := newWorld
-    if data.World == nil {
-        client.Call("Engine.GetWorld", x, &worldReply)
-        data.World = worldReply
-    }
+    data.TheParams = p
 
     ///create a reply variable to receive the updated world from the logic engine
     var reply [][]byte

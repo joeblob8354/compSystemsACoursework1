@@ -30,11 +30,15 @@ var globalTurn = 0
 
 var globalWorld [][]byte
 
+var globalParams gol.Params
+
 //add addresses of aws nodes here
 var nodeAddresses = [2]string{"54.208.137.161:8030", "3.93.7.41:8030"}
 
 // Run starts the processing of Game of Life. It should initialise channels and goroutines.
 func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
+
+    globalParams = data.TheParams
 
     if data.World == nil {
         data.World = globalWorld
@@ -97,6 +101,15 @@ func (e *Engine) CheckTurnNumber(x int, turnReply *int) error {
 func (e *Engine) GetWorld(x int, worldReply *[][]byte) error {
 
     *worldReply = globalWorld
+    return nil
+}
+
+//checks if the params of the connected controller match those of the previous controller
+func (e *Engine) CheckParams(p gol.Params, reply *bool) error {
+
+    if p == globalParams {
+        *reply = true
+    } else *reply = false
     return nil
 }
 
