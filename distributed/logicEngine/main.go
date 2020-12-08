@@ -83,7 +83,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         if err != nil {
             log.Fatal("Failed to connect to node ", numberOfNodes - 1, " ", err)
         }
-        workerData.StartHeight = heightOfSection - 1*heightOfSection
+        workerData.StartHeight = data.TheParams.ImageHeight - heightOfSection
         workerData.EndHeight = data.TheParams.ImageHeight
         listOfNodes[numberOfNodes - 1].Call("Engine.RunWorker", workerData, &workerReplies[numberOfNodes - 1])
 
