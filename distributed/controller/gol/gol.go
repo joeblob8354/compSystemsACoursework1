@@ -171,6 +171,9 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 //ticker function that loops every 2 seconds and sends AliveCellsCount events
 func ticker(tk *time.Ticker, world *[][]byte, turn *int, d distributorChannels, p Params) {
     for range tk.C{
+        if *turn == 0 {
+            d.events <- AliveCellsCount{CompletedTurns: 0, CellsCount: 0}
+        }
         d.events <- AliveCellsCount{CompletedTurns: *turn, CellsCount: checkNumberOfAliveCells(p, *world)}
     }
 }
