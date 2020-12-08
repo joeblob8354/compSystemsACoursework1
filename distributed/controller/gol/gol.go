@@ -75,6 +75,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     if paramsReply == true {
         if turn != 0 {
+            turn = turn
             fmt.Println("Unfinished board found with matching parameters, continuing processing unfinished board...")
         }
 
@@ -111,6 +112,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //For each turn, call the Run method on the server and send it the world
     for turn = turn; turn < p.Turns; turn++ {
+        fmt.Println(checkNumberOfAliveCells(p, data.World))
         data.Turn = turn
         client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
@@ -171,10 +173,8 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 //ticker function that loops every 2 seconds and sends AliveCellsCount events
 func ticker(tk *time.Ticker, world *[][]byte, turn *int, d distributorChannels, p Params) {
     for range tk.C{
-        if *turn == 0 {
-            d.events <- AliveCellsCount{CompletedTurns: 0, CellsCount: 0}
-        }
-        d.events <- AliveCellsCount{CompletedTurns: *turn, CellsCount: checkNumberOfAliveCells(p, *world)}
+        theTurn := *turn
+        d.events <- AliveCellsCount{CompletedTurns: theTurn, CellsCount: checkNumberOfAliveCells(p, *world)}
     }
 }
 
