@@ -75,12 +75,13 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     if paramsReply == true {
         if turn != 0 {
-            turn = turn
-            fmt.Println("Unfinished board found with matching parameters, continuing processing unfinished board...")
+           fmt.Println("Unfinished board found with matching parameters, continuing processing unfinished board...")
         }
 
         if turn == 0 {
             data.World = newWorld
+        } else {
+            turn++
         }
 
         worldReply := newWorld
@@ -99,21 +100,24 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         data.World = newWorld
     }
 
+
     data.TheParams = p
+    data.Turn = turn
 
     ///create a reply variable to receive the updated world from the logic engine
     var reply [][]byte
 
     //create a new ticker and start it.
-    tk := time.NewTicker(time.Second*1)
-    go ticker(tk, &data.World, &turn, d, p)
+    tk := time.NewTicker(time.Second*2)
+    var cellCount int
+    go ticker(tk, &cellCount, &turn, d, p)
 
     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
     //For each turn, call the Run method on the server and send it the world
     for turn = turn; turn < p.Turns; turn++ {
-        fmt.Println(checkNumberOfAliveCells(p, data.World))
         data.Turn = turn
+        cellCount = len(calculateAliveCells(data.TheParams, data.World))
         client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
         var key rune
@@ -130,7 +134,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     }
                     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
                     tk = time.NewTicker(time.Second*1)
-                    go ticker(tk, &data.World, &turn, d, p)
+                    go ticker(tk, &cellCount, &turn, d, p)
                 } else if key == 'q' {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
@@ -171,24 +175,12 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 }
 
 //ticker function that loops every 2 seconds and sends AliveCellsCount events
-func ticker(tk *time.Ticker, world *[][]byte, turn *int, d distributorChannels, p Params) {
+func ticker(tk *time.Ticker, cellCount *int, turn *int, d distributorChannels, p Params) {
     for range tk.C{
         theTurn := *turn
-        d.events <- AliveCellsCount{CompletedTurns: theTurn, CellsCount: checkNumberOfAliveCells(p, *world)}
+        theCount := *cellCount
+        d.events <- AliveCellsCount{CompletedTurns: theTurn, CellsCount: theCount}
     }
-}
-
-//returns number of alive cells in a world state
-func checkNumberOfAliveCells(p Params, world [][]byte) int {
-    numberOfAliveCells := 0
-    for currRow := 0; currRow < p.ImageHeight; currRow++ {
-	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-	        if world[currRow][currColumn] == 255 {
-	            numberOfAliveCells++
-	        }
-	    }
-	}
-	return numberOfAliveCells
 }
 
 //Outputs a program file of the world state.

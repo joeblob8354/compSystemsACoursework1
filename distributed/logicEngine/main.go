@@ -46,11 +46,9 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
     numberOfNodes := data.TheParams.Threads
     if numberOfNodes > len(nodeAddresses) {
-        //fmt.Println("Not enough nodes available! Using", len(nodeAddresses), "nodes instead.")
+        fmt.Println("Not enough nodes available! Using", len(nodeAddresses), "nodes instead.")
         numberOfNodes = len(nodeAddresses)
     }
-
-    numberOfNodes = 1
 
     if numberOfNodes == 1 {
         globalWorld = gol.CalculateNextState(data.TheParams, 0, data.TheParams.ImageHeight, data.World)
@@ -107,7 +105,6 @@ func (e *Engine)RunWorker (data WorkerData, reply *[][]byte) error {
 
 func (e *Engine) CheckTurnNumber(x int, turnReply *int) error {
 
-    fmt.Println("Params reset")
     *turnReply = globalTurn
     return nil
 }
@@ -131,6 +128,7 @@ func (e *Engine) CheckParams(p gol.Params, reply *bool) error {
 
 func (e *Engine) ResetGlobals(x int, reply *bool) error {
 
+    fmt.Println("Params reset")
     globalTurn, globalWorld = 0, nil
     return nil
 }
