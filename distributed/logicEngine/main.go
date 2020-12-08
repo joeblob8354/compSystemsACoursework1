@@ -46,7 +46,6 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
     numberOfNodes := data.TheParams.Threads
     if numberOfNodes > len(nodeAddresses) {
-        fmt.Println("Not enough nodes available! Using", len(nodeAddresses), "nodes instead.")
         numberOfNodes = len(nodeAddresses)
     }
 
@@ -97,18 +96,21 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     return nil
 }
 
+//calculates the next state of a world given a world state and y-coordinates to work on
 func (e *Engine)RunWorker (data WorkerData, reply *[][]byte) error {
 
     *reply = gol.CalculateNextState(data.TheParams, data.StartHeight, data.EndHeight, data.World)
     return nil
 }
 
+//checks the turn the server was working on before it quit its last operation
 func (e *Engine) CheckTurnNumber(x int, turnReply *int) error {
 
     *turnReply = globalTurn
     return nil
 }
 
+//get the world from the global world variable and sends in back to the client as a reply
 func (e *Engine) GetWorld(x int, worldReply *[][]byte) error {
 
     *worldReply = globalWorld
@@ -126,10 +128,18 @@ func (e *Engine) CheckParams(p gol.Params, reply *bool) error {
     return nil
 }
 
+//resets the global variables on the master node
 func (e *Engine) ResetGlobals(x int, reply *bool) error {
 
     fmt.Println("Params reset")
     globalTurn, globalWorld = 0, nil
+    return nil
+}
+
+//gets how many aws node addresses are available for use and sends this info to the client
+func (e* Engine) GetAvailableNodes(x int, reply *int) error {
+
+    *reply = len(nodeAddresses)
     return nil
 }
 

@@ -104,6 +104,16 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     data.TheParams = p
     data.Turn = turn
 
+    var x int
+    var availableNodes int
+    client.Call("Engine.GetAvailableNodes", x, &availableNodes)
+
+    //checks how many worker nodes are available for use and adjusts the parameters if less than number requested are available
+    if data.TheParams.Threads > availableNodes {
+        fmt.Println("Not enough nodes available! Using", availableNodes, "nodes instead.")
+        data.TheParams.Threads = availableNodes
+    }
+
     ///create a reply variable to receive the updated world from the logic engine
     var reply [][]byte
 
