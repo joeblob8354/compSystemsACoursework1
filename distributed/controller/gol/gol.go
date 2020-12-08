@@ -81,7 +81,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         if turn == 0 {
             data.World = newWorld
         } else {
-            turn++
+            turn = turn + 1
         }
 
         worldReply := newWorld
