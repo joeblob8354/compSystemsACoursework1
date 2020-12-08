@@ -89,7 +89,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     	}
 
         //for each worker, connect to the aws node and store the connection pointer in the listOfNodes slice or throw an error.
-        for node := 0; node < numberOfNodes-1; node++ {
+        for node := 0; node < numberOfNodes - 1; node++ {
             var err error
             listOfNodes[node], err = rpc.Dial("tcp", nodeAddresses[node])
             if err != nil {
@@ -109,7 +109,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         }
         workerData.StartHeight = data.TheParams.ImageHeight - heightOfSection
         workerData.EndHeight = data.TheParams.ImageHeight
-        go call((numberOfNodes - 1), workerData, listOfNodes, workerReplies, chanSlice[numberOfNodes - 1])
+        go call((numberOfNodes - 1), workerData, listOfNodes, workerReplies, chanSlice[(numberOfNodes - 1)])
 
         //reset globalWorld state
         globalWorld = nil
