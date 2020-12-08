@@ -199,7 +199,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 	//send command to io to let make it execute the writePgmImage() function.
 	c.ioCommand <- ioOutput
 	//send the filename to the writePgmImage() function.
-	c.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) /*+ "x" + strconv.Itoa(p.Turns)*/)
+	c.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(p.Turns))
 
 	//Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
 	for currRow := 0; currRow < p.ImageHeight; currRow++ {

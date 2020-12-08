@@ -33,19 +33,6 @@ type distributorChannels struct {
 	ioOutput   chan<- uint8
 }
 
-//returns a array of alive cells in the current state
-func calculateAliveCells(p Params, world [][]byte) []util.Cell {
-	var aliveCells []util.Cell
-	for currRow := 0; currRow < p.ImageHeight; currRow++ {
-	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-	        if world[currRow][currColumn] == 255 {
-	            aliveCells = append(aliveCells, util.Cell{X: currColumn, Y: currRow})
-	        }
-	    }
-	}
-	return aliveCells
-}
-
 func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //Creates a 2D slice to store the world.
@@ -67,7 +54,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     }
 
     //connect to server or return an error
-    serverAddress := "34.228.239.127:8030"
+    serverAddress := "localhost:8030"
     client, err := rpc.Dial("tcp", serverAddress)
 
     if err != nil {
@@ -166,6 +153,20 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //close events channel
     close(d.events)
+}
+
+//returns a array of alive cells in the current state
+func calculateAliveCells(p Params, world [][]byte) []util.Cell {
+	var aliveCells []util.Cell
+	for currRow := 0; currRow < p.ImageHeight; currRow++ {
+	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
+	        fmt.Println(world)
+	        if world[currRow][currColumn] == 255 {
+	            aliveCells = append(aliveCells, util.Cell{X: currColumn, Y: currRow})
+	        }
+	    }
+	}
+	return aliveCells
 }
 
 //ticker function that loops every 2 seconds and sends AliveCellsCount events
