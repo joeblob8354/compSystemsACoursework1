@@ -129,6 +129,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         data.Turn = turn
         tickerWorld := data.World
         cellCount = len(calculateAliveCells(data.TheParams, tickerWorld))
+        fmt.Println(cellCount, turn)
         client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
         var key rune
