@@ -96,7 +96,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             globalWorld = append(globalWorld, part...)
         }*/
         globalWorld = workerReply0
-        globalWorld = append(globalWorld, workerReply1)
+        globalWorld.append(workerReply1)
     }
 
     globalTurn = data.Turn
