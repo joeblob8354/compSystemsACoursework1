@@ -104,7 +104,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     data.TheParams = p
     data.Turn = turn
 
-    var x int
+    var y int
     var availableNodes int
     client.Call("Engine.GetAvailableNodes", x, &availableNodes)
 
