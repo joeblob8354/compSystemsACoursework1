@@ -82,6 +82,12 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             listOfNodes = append(listOfNodes, client)
         }
 
+        //creates a slice of channels that will be used to receive incoming completed sections from workers.
+    	chanSlice := make([]chan [][]byte, numberOfNodes)
+    	for i := range chanSlice {
+    		chanSlice[i] = make(chan [][]byte)
+    	}
+
         //for each worker, connect to the aws node and store the connection pointer in the listOfNodes slice or throw an error.
         for node := 0; node < numberOfNodes-1; node++ {
             var err error
@@ -93,7 +99,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             workerData.StartHeight = 0 + node*heightOfSection
             workerData.EndHeight = heightOfSection + node*heightOfSection
             //store the replied world data in the worker replies slice.
-            go call(node, workerData, listOfNodes, workerReplies)
+            go call(node, workerData, listOfNodes, workerReplies, chanSlice[node])
         }
         //this last worker .Call is to prevent odd numbers of workers causing issues
         var err error
@@ -103,15 +109,14 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         }
         workerData.StartHeight = data.TheParams.ImageHeight - heightOfSection
         workerData.EndHeight = data.TheParams.ImageHeight
-        call((numberOfNodes - 1), workerData, listOfNodes, workerReplies)
+        go call((numberOfNodes - 1), workerData, listOfNodes, workerReplies, chanSlice[numberOfNodes - 1])
 
         //reset globalWorld state
         globalWorld = nil
 
         //stick the worker parts together into one final world state
         for node := 0; node < numberOfNodes; node++ {
-    	    part := workerReplies[node]
-    	    fmt.Println(part)
+    	    part := <-chanSlice[section]
     		globalWorld = append(globalWorld, part...)
     	}
     }
@@ -129,9 +134,10 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     return nil
 }
 
-func call(node int, workerData WorkerData, listOfNodes []*rpc.Client, workerReplies [][][]byte) {
+func call(node int, workerData WorkerData, listOfNodes []*rpc.Client, workerReplies [][][]byte, out chan<- [][]byte) {
 
     listOfNodes[node].Call("Engine.RunWorker", workerData, &workerReplies[node])
+    out <- workerReplies[node]
 }
 
 //calculates the next state of a world given a world state and y-coordinates to work on
