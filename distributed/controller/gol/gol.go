@@ -127,7 +127,8 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     //For each turn, call the Run method on the server and send it the world
     for turn = turn; turn < p.Turns; turn++ {
         data.Turn = turn
-        cellCount = len(calculateAliveCells(data.TheParams, data.World))
+        tickerWorld := data.World
+        cellCount = len(calculateAliveCells(data.TheParams, tickerWorld))
         client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
         var key rune
