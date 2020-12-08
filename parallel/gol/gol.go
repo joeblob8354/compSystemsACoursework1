@@ -1,7 +1,7 @@
 package gol
 import (
 	"time"
-	"fmt"
+	//"fmt"
 )
 
 // Params provides the details of how to run the Game of Life and which image to load.
@@ -51,7 +51,6 @@ func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
 				case <-ticker.C:
 					tickerAvail <- true
 					send := <-sendAlive
-					fmt.Println(send)
 					events <- send 
 				default:
 					
