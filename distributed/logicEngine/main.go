@@ -70,6 +70,8 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             workerData.StartHeight = workerData.StartHeight + heightOfSection
             workerData.EndHeight = workerData.EndHeight + heightOfSection
         }
+        fmt.Println(*replies[0])
+        fmt.Println(*replies[1])
 
         for node := 0; node < numberOfNodes; node++ {
             part := *replies[node]
