@@ -107,7 +107,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         if err != nil {
             log.Fatal("Failed to connect to node ", numberOfNodes - 1, " ", err)
         }
-        workerData.StartHeight = data.TheParams.ImageHeight - heightOfSection
+        workerData.StartHeight = (numberOfNodes - 1)*heightOfSection
         workerData.EndHeight = data.TheParams.ImageHeight
         go call((numberOfNodes - 1), workerData, listOfNodes, workerReplies, chanSlice[(numberOfNodes - 1)])
 
