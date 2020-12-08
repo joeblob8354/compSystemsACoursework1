@@ -106,7 +106,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     var y int
     var availableNodes int
-    client.Call("Engine.GetAvailableNodes", x, &availableNodes)
+    client.Call("Engine.GetAvailableNodes", y, &availableNodes)
 
     //checks how many worker nodes are available for use and adjusts the parameters if less than number requested are available
     if data.TheParams.Threads > availableNodes {
