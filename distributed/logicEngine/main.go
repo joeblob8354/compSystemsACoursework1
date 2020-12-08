@@ -103,7 +103,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         }
         workerData.StartHeight = data.TheParams.ImageHeight - heightOfSection
         workerData.EndHeight = data.TheParams.ImageHeight
-        go listOfNodes[numberOfNodes - 1].Call("Engine.RunWorker", workerData, &workerReplies[numberOfNodes - 1])
+        listOfNodes[numberOfNodes - 1].Call("Engine.RunWorker", workerData, &workerReplies[numberOfNodes - 1])
 
         //reset globalWorld state
         globalWorld = nil
