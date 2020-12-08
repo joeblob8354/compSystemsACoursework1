@@ -93,7 +93,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             workerData.StartHeight = 0 + node*heightOfSection
             workerData.EndHeight = heightOfSection + node*heightOfSection
             //store the replied world data in the worker replies slice.
-            call(node, workerData, listOfNodes, workerReplies)
+            go call(node, workerData, listOfNodes, workerReplies)
         }
         //this last worker .Call is to prevent odd numbers of workers causing issues
         var err error
