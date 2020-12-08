@@ -98,7 +98,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
         globalWorld = nil
 
-        workerReplies := []([][]byte){}
+        workerReplies := [2]([][]byte){}
         workerReplies[0] = workerReply0
         workerReplies[1] = workerReply1
 
