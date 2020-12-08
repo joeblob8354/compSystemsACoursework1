@@ -131,7 +131,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     return nil
 }
 
-func call(node int, workerData workerData, listOfNodes []*rpc.Client, workerReplies [][][]byte) {
+func call(node int, workerData WorkerData, listOfNodes []*rpc.Client, workerReplies [][][]byte) {
 
     listOfNodes[node].Call("Engine.RunWorker", workerData, &workerReplies[node])
 }
