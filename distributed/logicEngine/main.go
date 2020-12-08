@@ -111,12 +111,9 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         //stick the worker parts together into one final world state
         for node := 0; node < numberOfNodes; node++ {
     	    part := workerReplies[node]
-    	    fmt.Println(part)
     		globalWorld = append(globalWorld, part...)
     	}
     }
-
-    fmt.Println(globalWorld)
 
     //update the global turn
     globalTurn = data.Turn
