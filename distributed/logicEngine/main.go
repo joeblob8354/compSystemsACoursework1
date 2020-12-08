@@ -93,7 +93,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             workerData.StartHeight = 0 + node*heightOfSection
             workerData.EndHeight = heightOfSection + node*heightOfSection
             //store the replied world data in the worker replies slice.
-            listOfNodes[node].Call("Engine.RunWorker", workerData, &workerReplies[node])
+            call(node, workerData, listOfNodes, workerReplies)
         }
         //this last worker .Call is to prevent odd numbers of workers causing issues
         var err error
@@ -103,7 +103,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         }
         workerData.StartHeight = data.TheParams.ImageHeight - heightOfSection
         workerData.EndHeight = data.TheParams.ImageHeight
-        go listOfNodes[numberOfNodes - 1].Call("Engine.RunWorker", workerData, &workerReplies[numberOfNodes - 1])
+        call((numberOfNodes - 1), workerData, listOfNodes, workerReplies)
 
         //reset globalWorld state
         globalWorld = nil
@@ -129,6 +129,11 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         globalWorld = nil
     }
     return nil
+}
+
+func call(node int, workerData workerData, listOfNodes []*rpc.Client, workerReplies [][][]byte) {
+
+    listOfNodes[node].Call("Engine.RunWorker", workerData, &workerReplies[node])
 }
 
 //calculates the next state of a world given a world state and y-coordinates to work on
