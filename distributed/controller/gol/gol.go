@@ -109,7 +109,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //create a new ticker and start it.
     tk := time.NewTicker(time.Second*2)
-    var cellCount int
+    cellCount := len(calculateAliveCells(data.TheParams, data.World))
     go ticker(tk, &cellCount, &turn, d, p)
 
     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
