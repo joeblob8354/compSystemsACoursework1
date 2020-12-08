@@ -127,6 +127,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 func (e *Engine)RunWorker (data WorkerData, reply *[][]byte) error {
 
     *reply = gol.CalculateNextState(data.TheParams, data.StartHeight, data.EndHeight, data.World)
+    fmt.Println(*reply)
     return nil
 }
 
