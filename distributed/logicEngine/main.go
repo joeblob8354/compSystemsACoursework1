@@ -58,7 +58,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         workerData.StartHeight = 0
         workerData.EndHeight = heightOfSection
 
-        nodes := []*rpc.Client{}
+        /*nodes := []*rpc.Client{}
         var err error
         replies := []*[][]byte{}
         for n := 0; n < numberOfNodes; n++ {
@@ -69,14 +69,34 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             nodes[n].Call("Engine.RunWorker", workerData, &replies[n])
             workerData.StartHeight = workerData.StartHeight + heightOfSection
             workerData.EndHeight = workerData.EndHeight + heightOfSection
-        }
-        fmt.Println(*replies[0])
-        fmt.Println(*replies[1])
+        }*/
 
-        for node := 0; node < numberOfNodes; node++ {
+        node0, err := rpc.Dial("tcp", nodeAddresses[0])
+        if err != nil {
+            log.Fatal("Failed to connect to node 0", err)
+        }
+
+        node1, err1 := rpc.Dial("tcp", nodeAddresses[1])
+        if err1 != nil {
+            log.Fatal("Failed to connect to node 1", err1)
+        }
+
+        workerData.StartHeight = 0
+        workerData.EndHeight = heightOfSection
+        var workerReply0 [][]byte
+        node0.Call("Engine.RunWorker", workerData, &workerReply0)
+
+        workerData.StartHeight = heightOfSection
+        workerData.EndHeight = heightOfSection + heightOfSection
+         var workerReply1 [][]byte
+        node1.Call("Endgine.RunWorker", workerData, &workerReply1)
+
+        /*for node := 0; node < numberOfNodes; node++ {
             part := *replies[node]
             globalWorld = append(globalWorld, part...)
-        }
+        }*/
+        globalWorld = workerReply0
+        globalWorld = append(globalWorld, workerReply1)
     }
 
     globalTurn = data.Turn
