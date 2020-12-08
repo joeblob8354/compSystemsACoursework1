@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	//"fmt"
+	"fmt"
 	"runtime"
 	"uk.ac.bris.cs/gameoflife/gol"
 	//"uk.ac.bris.cs/gameoflife/sdl"
@@ -110,6 +110,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
         //stick the worker parts together into one final world state
         for node := 0; node < numberOfNodes; node++ {
+            fmt.Println(part)
     	    part := workerReplies[node]
     		globalWorld = append(globalWorld, part...)
     	}
