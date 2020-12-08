@@ -78,14 +78,14 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             workerData.EndHeight = heightOfSection + node*heightOfSection
             listOfNodes[node].Call("Engine.RunWorker", workerData, &workerReplies[node])
         }
-            var err error
-            listOfNodes[numberOfNodes - 1], err = rpc.Dial("tcp", nodeAddresses[numberOfNodes - 1])
-            if err != nil {
-                log.Fatal("Failed to connect to node ", numberOfNodes - 1, " ", err)
-            }
-            workerData.StartHeight = heightOfSection - 1
-            workerData.EndHeight = data.TheParams.ImageHeight
-            listOfNodes[numberOfNodes - 1].Call("Engine.RunWorker", workerData, &workerReplies[numberOfNodes - 1])
+        var err error
+        listOfNodes[numberOfNodes - 1], err = rpc.Dial("tcp", nodeAddresses[numberOfNodes - 1])
+        if err != nil {
+            log.Fatal("Failed to connect to node ", numberOfNodes - 1, " ", err)
+        }
+        workerData.StartHeight = heightOfSection - 1*heightOfSection
+        workerData.EndHeight = data.TheParams.ImageHeight
+        listOfNodes[numberOfNodes - 1].Call("Engine.RunWorker", workerData, &workerReplies[numberOfNodes - 1])
 
         globalWorld = nil
 
