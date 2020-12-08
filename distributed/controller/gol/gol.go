@@ -61,6 +61,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         log.Fatal("Failed to connect to ", err)
     }
 
+    //check to see if the params stored by the logicEngine match those given by the controller
     var paramsReply bool
     client.Call("Engine.CheckParams", p, &paramsReply)
 
@@ -70,14 +71,19 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     var turn int
     var x int
     var turnReply int
+
+    //get the turn stored by the logicEngine
     client.Call("Engine.CheckTurnNumber", x, &turnReply)
     turn = turnReply
 
+    //if the params from the logic engine match those given by the controller...
     if paramsReply == true {
+        //...and the logic engine has an unfinished board, then continue to process the unfinished board.
         if turn != 0 {
            fmt.Println("Unfinished board found with matching parameters, continuing processing unfinished board...")
         }
 
+        //... or if the params match but no unfinished board is stored then set the world data to world state provided by the client
         if turn == 0 {
             data.World = newWorld
         } else {
@@ -85,30 +91,35 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         }
 
         worldReply := newWorld
+        //if the world state is still nil at this point (not provided by client) get the unfinished board world state from the logic engine.
         if data.World == nil {
             client.Call("Engine.GetWorld", x, &worldReply)
+            //...and update the world data.
             data.World = worldReply
         }
-    } else {
+    } else { //if the params given by the client don't match those stored on the engine...
+        //... and there is an unfinished board stored on the engine. Then warn the controller of this...
         if turn != 0{
             fmt.Println("Warning: Unfinished board found with differing parameters, starting processing of new board with new parameters...")
         }
         var boolReply bool
         var z int
+        //... and reset global variables of on the engine to prepare it for processing a new board with differing params.
         client.Call("Engine.ResetGlobals", z, &boolReply)
         turn = 0
         data.World = newWorld
     }
 
-
+    //set data params and turn
     data.TheParams = p
     data.Turn = turn
 
     var y int
     var availableNodes int
+    //check how many nodes are available for use on the engine
     client.Call("Engine.GetAvailableNodes", y, &availableNodes)
 
-    //checks how many worker nodes are available for use and adjusts the parameters if less than number requested are available
+    //adjusts the parameters if less than number of nodes requested are available
     if data.TheParams.Threads > availableNodes {
         fmt.Println("Not enough nodes available! Using", availableNodes, "nodes instead.")
         data.TheParams.Threads = availableNodes
@@ -122,19 +133,25 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     cellCount := len(calculateAliveCells(data.TheParams, data.World))
     go ticker(tk, &cellCount, &turn, d, p)
 
+    //change state to executing
     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
-    //For each turn, call the Run method on the server and send it the world
+    //For each turn, call the Run method on the server and send it the world and other data for processing.
     for turn = turn; turn < p.Turns; turn++ {
         data.Turn = turn
         cellCount = len(calculateAliveCells(data.TheParams, data.World))
         client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
         var key rune
+
+        //listening for incoming key-presses without blocking
         select {
             case key = <- k:
+                //if s is pressed output a pgm img of the current world state and the corresponding turn.
                 if key == 's' {
                     outputPgmFile(d, p, data.World, turn)
+
+                //if p is pressed, change state to paused, stop the ticker, and wait for p to be pressed again before continuing.
                 } else if key == 'p' {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Paused}
                     tk.Stop()
@@ -142,13 +159,16 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     for key != 'p' {
                         key = <- k
                     }
+                    //change state to executing and restart the ticker
                     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
                     tk = time.NewTicker(time.Second*2)
                     go ticker(tk, &cellCount, &turn, d, p)
+                // if q is pressed, change state to quitting and exit.
                 } else if key == 'q' {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
                 }
+            //otherwise, do nothing and continue to next turn
             default:
         }
     }
