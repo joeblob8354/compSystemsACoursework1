@@ -33,7 +33,7 @@ var globalWorld [][]byte
 var globalParams gol.Params
 
 //add addresses of aws nodes here
-var nodeAddresses = [2]string{"54.208.137.161:8030", "3.93.7.41:8030", "54.80.215.196:8030", "54.210.236.107:8030", "34.229.232.22:8030", "54.81.217.163:8030", ,"18.207.161.206:8030", "35.168.13.14:8030"}
+var nodeAddresses = [2]string{"54.208.137.161:8030", "3.93.7.41:8030", "54.80.215.196:8030", "54.210.236.107:8030", "34.229.232.22:8030", "54.81.217.163:8030", "18.207.161.206:8030", "35.168.13.14:8030"}
 
 // Run starts the processing of Game of Life. It should initialise channels and goroutines.
 func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
