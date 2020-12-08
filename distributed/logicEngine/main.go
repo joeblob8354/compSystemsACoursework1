@@ -113,7 +113,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
         for currRow := heightOfSection; currRow < heightOfSection*2; currRow++ {
             for currColumn := 0; currColumn < data.TheParams.ImageWidth; currColumn++ {
-                globalWorld[currRow][currColumn] = workerReply1[currRow][currColumn]
+                globalWorld[currRow][currColumn] = workerReply1[currRow-heightOfSection][currColumn]
             }
         }
     }
