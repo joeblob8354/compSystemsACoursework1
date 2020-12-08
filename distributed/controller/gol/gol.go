@@ -81,7 +81,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
         if turn == 0 {
             data.World = newWorld
         } else {
-            turn = turn + 1
+            turn++
         }
 
         worldReply := newWorld
@@ -125,11 +125,9 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
     //For each turn, call the Run method on the server and send it the world
-    for turn = 1; turn < p.Turns; turn++ {
+    for turn = turn; turn < p.Turns; turn++ {
         data.Turn = turn
-        tickerWorld := data.World
-        cellCount = len(calculateAliveCells(data.TheParams, tickerWorld))
-        fmt.Println(cellCount, turn)
+        cellCount = len(calculateAliveCells(data.TheParams, data.World))
         client.Call("Engine.RunMaster", data, &reply)
         data.World = reply
         var key rune
