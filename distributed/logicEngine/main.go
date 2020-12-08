@@ -95,8 +95,24 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
             part := *replies[node]
             globalWorld = append(globalWorld, part...)
         }*/
-        globalWorld = workerReply0
-        globalWorld.append(workerReply1)
+
+        newWorld := make([][]byte, data.TheParams.ImageHeight)
+        for i := 0; i < data.TheParams.ImageHeight; i++ {
+            newWorld[i] = make([]byte, data.TheParams.ImageWidth)
+        }
+        globalWorld = newWorld
+
+        for currRow := 0; currRow < heightOfSection; currRow++ {
+            for currColumn := 0; currColumn < data.TheParams.ImageWidth; currColumn++ {
+                globalWorld[currRow][currColumn] = workerReply0[currRow][currColumn]
+            }
+        }
+
+        for currRow := heightOfSection; currRow < heightOfSection*2; currRow++ {
+            for currColumn := 0; currColumn < data.TheParams.ImageWidth; currColumn++ {
+                globalWorld[currRow][currColumn] = workerReply1[currRow][currColumn]
+            }
+        }
     }
 
     globalTurn = data.Turn
