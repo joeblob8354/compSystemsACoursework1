@@ -89,7 +89,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         workerData.StartHeight = heightOfSection
         workerData.EndHeight = heightOfSection + heightOfSection
          var workerReply1 [][]byte
-        node1.Call("Endgine.RunWorker", workerData, &workerReply1)
+        node1.Call("Engine.RunWorker", workerData, &workerReply1)
 
         /*for node := 0; node < numberOfNodes; node++ {
             part := *replies[node]
