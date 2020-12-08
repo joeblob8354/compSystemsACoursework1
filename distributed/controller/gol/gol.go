@@ -160,7 +160,6 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 	var aliveCells []util.Cell
 	for currRow := 0; currRow < p.ImageHeight; currRow++ {
 	    for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-	        fmt.Println(world)
 	        if world[currRow][currColumn] == 255 {
 	            aliveCells = append(aliveCells, util.Cell{X: currColumn, Y: currRow})
 	        }
