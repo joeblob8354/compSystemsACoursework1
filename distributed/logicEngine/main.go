@@ -98,8 +98,8 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
         globalWorld = nil
         workerReplies := [][][]byte{}
-        workerReplies[0] = workerReply0
-        workerReplies[1] = workerReply1
+        workerReplies = append(workerReplies, workerReply0)
+        workerReplies = append(workerReplies, workerReply1)
 
         for node := 0; node < numberOfNodes; node++ {
     	    part := workerReplies[node]
