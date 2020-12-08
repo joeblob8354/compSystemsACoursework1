@@ -125,7 +125,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 
     //For each turn, call the Run method on the server and send it the world
-    for turn = turn; turn < p.Turns; turn++ {
+    for turn = 1; turn < p.Turns; turn++ {
         data.Turn = turn
         tickerWorld := data.World
         cellCount = len(calculateAliveCells(data.TheParams, tickerWorld))
