@@ -46,7 +46,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
 
     numberOfNodes := data.TheParams.Threads
     if numberOfNodes > len(nodeAddresses) {
-        fmt.Println("Not enough nodes available! Using ", len(nodeAddresses), " nodes instead.")
+        fmt.Println("Not enough nodes available! Using", len(nodeAddresses), "nodes instead.")
         numberOfNodes = len(nodeAddresses)
     }
 
