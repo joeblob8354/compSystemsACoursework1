@@ -179,6 +179,9 @@ func ticker(tk *time.Ticker, cellCount *int, turn *int, d distributorChannels, p
     for range tk.C{
         theTurn := *turn
         theCount := *cellCount
+        if theTurn == 0 {
+            theCount = 0
+        }
         d.events <- AliveCellsCount{CompletedTurns: theTurn, CellsCount: theCount}
     }
 }
