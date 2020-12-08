@@ -50,8 +50,6 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         numberOfNodes = len(nodeAddresses)
     }
 
-    numberOfNodes = 1
-
     if numberOfNodes == 1 {
         globalWorld = gol.CalculateNextState(data.TheParams, 0, data.TheParams.ImageHeight, data.World)
     } else {
