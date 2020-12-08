@@ -12,10 +12,11 @@ import (
 
 // Params provides the details of how to run the Game of Life and which image to load.
 type Params struct {
-	Turns       int
-	Threads     int
-	ImageWidth  int
-	ImageHeight int
+	Turns         int
+	Threads       int
+	ImageWidth    int
+	ImageHeight   int
+	ServerAddress string
 }
 
 type Data struct {
@@ -54,7 +55,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     }
 
     //connect to server or return an error
-    serverAddress := "34.228.239.127:8030"
+    serverAddress := p.ServerAddress + ":8030"
     client, err := rpc.Dial("tcp", serverAddress)
 
     if err != nil {

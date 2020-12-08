@@ -38,6 +38,12 @@ func main() {
 		10000000000,
 		"Specify the number of turns to process. Defaults to 10000000000.")
 
+    flag.StringVar(
+        &params.ServerAddress,
+        "ip",
+        "localhost",
+        "Specify the server ip address")
+
 	flag.Parse()
 
 	fmt.Println("Threads:", params.Threads)
