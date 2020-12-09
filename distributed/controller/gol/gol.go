@@ -175,8 +175,8 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     client.Call("Engine.QuitAll", x, &reply)
                     verify := false
                     verify = outputPgmFile(d, p, data.World, turn)
-                    d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     for verify != true {}
+                    d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
                 }
             //otherwise, do nothing and continue to next turn
