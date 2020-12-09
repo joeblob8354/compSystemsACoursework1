@@ -212,21 +212,8 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
                 //if s is pressed output a pgm img of the current world state and the corresponding turn.
                 if key == 's' {
                     outputPgmFile(c, p, newWorld, turn)
-
-                //if p is pressed, change state to paused, stop the ticker, and wait for p to be pressed again before continuing.
-                } /*else if key == 'p' {
-                    c.events <- StateChange{CompletedTurns: turn, NewState: Paused}
-                    tk.Stop()
-                    key = <- k
-                    for key != 'p' {
-                        key = <- k
-                    }
-                    //change state to executing and restart the ticker
-                    d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
-                    tk = time.NewTicker(time.Second*2)
-                    go ticker(tk, &cellCount, &turn, d, p)
                 // if q is pressed, change state to quitting and exit.
-                }*/ else if key == 'q' {
+                } else if key == 'q' {
                     c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
                 //if k is pressed close all elements of system, starting with worker nodes, then master node
