@@ -173,7 +173,8 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     tk.Stop()
                     var x, reply int
                     client.Call("Engine.QuitAll", x, &reply)
-                    verify := outputPgmFile(d, p, data.World, turn)
+                    verify := false
+                    verify = outputPgmFile(d, p, data.World, turn)
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     for verify != true {}
                     os.Exit(0)
