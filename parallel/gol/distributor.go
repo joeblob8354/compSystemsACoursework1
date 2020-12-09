@@ -208,7 +208,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 					for key != 'p' {
 						key = <-k
 					}
-					c.events <- StateChange{CompletedTurns: tur, NewState: Executing}
+					c.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 				}
 			default:
 
