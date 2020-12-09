@@ -7,8 +7,18 @@ import (
 var p gol.Params
 
 func benchmarkParallel(p gol.Params, b *testing.B) {
-    for n := 0; n <= 10; n++ {
-        gol.Run(p, nil, nil)
+    for n := 0; n < 10; n++ {
+        events := make(chan gol.Event)
+        gol.Run(p, events, nil)
+        var turn int
+        for turn != p.Turns {
+            for event := range events {
+                switch e := event.(type) {
+        	    case gol.FinalTurnComplete:
+        	        turn = e.CompletedTurns
+        	    }
+            }
+        }
     }
 }
 

@@ -12,12 +12,6 @@ type Params struct {
 	ImageHeight int
 }
 
-func Simple(x int) {
-    for n := 0; n == 1000; n++ {
-        x = x + x
-    }
-}
-
 // Run starts the processing of Game of Life. It should initialise channels and goroutines.
 func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
 
