@@ -9,7 +9,7 @@ var p gol.Params
 
 func benchmarkParallel(benchName string, p gol.Params, b *testing.B) {
     for n := 0; n < b.N; n++ {
-        b.Run(benchName, func(b *testing.B) {gol.Run(p, nil, nil)})
+        gol.Run(p, nil, nil)
     }
 }
 
