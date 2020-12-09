@@ -202,7 +202,7 @@ func (e* Engine) QuitAll(x int, reply *int) error {
         if err != nil {
             log.Fatal("Failed to connect to node ", node, " ", err)
         }
-        var x, reply int int
+        var x, reply ini
         listOfNodes[node].Call("Engine.QuitNode", x, &reply)
     }
     os.Exit(0)
