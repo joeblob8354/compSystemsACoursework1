@@ -150,7 +150,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
             case key = <- k:
                 //if s is pressed output a pgm img of the current world state and the corresponding turn.
                 if key == 's' {
-                    outputPgmFile(d, p, data.World, turn)
+                    verfy := outputPgmFile(d, p, data.World, turn)
 
                 //if p is pressed, change state to paused, stop the ticker, and wait for p to be pressed again before continuing.
                 } else if key == 'p' {
@@ -172,8 +172,9 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     tk.Stop()
                     var x, reply int
                     client.Call("Engine.QuitAll", x, &reply)
-                    outputPgmFile(d, p, data.World, turn)
+                    verify := outputPgmFile(d, p, data.World, turn)
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+                    for verify != true {}
                     os.Exit(0)
                 }
             //otherwise, do nothing and continue to next turn
@@ -189,7 +190,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     d.events <- FinalTurnComplete{CompletedTurns: p.Turns, Alive: aliveCells}
 
     //outputs pgm file
-    outputPgmFile(d, p, data.World, turn)
+    verify := outputPgmFile(d, p, data.World, turn)
 
     // Make sure that the Io has finished any output before exiting.
  	d.ioCommand <- ioCheckIdle
@@ -225,7 +226,7 @@ func ticker(tk *time.Ticker, cellCount *int, turn *int, d distributorChannels, p
 }
 
 //Outputs a program file of the world state.
-func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) {
+func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) bool {
 
     //send command to io to let make it execute the writePgmImage() function.
     d.ioCommand <- 0
@@ -238,6 +239,7 @@ func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) {
             d.ioOutput <- world[currRow][currColumn]
         }
     }
+    return true
 }
 
 //create necessary channels and start go routines.
