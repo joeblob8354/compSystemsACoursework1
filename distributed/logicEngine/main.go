@@ -191,6 +191,7 @@ func (e* Engine) GetAvailableNodes(x int, reply *int) error {
 
 func (e* Engine) QuitAll(x int, reply *int) error {
 
+    listOfNodes := []*rpc.Client{}
     for numberOfWorkers := 0; numberOfWorkers < len(nodeAddresses); numberOfWorkers++ {
         var client *rpc.Client
         listOfNodes = append(listOfNodes, client)
