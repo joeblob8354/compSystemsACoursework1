@@ -3,7 +3,6 @@ package main
 import (
         "testing"
         "uk.ac.bris.cs/gameoflife/gol"
-        "strconv"
         )
 var p gol.Params
 
