@@ -3,7 +3,6 @@ package gol
 import (
 	"uk.ac.bris.cs/gameoflife/util"
 	"strconv"
-//	"time"
 //	"fmt"
     "os"
 )
@@ -197,6 +196,10 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
                     // if q is pressed, change state to quitting and exit.
                     } else if key == 'q' {
                         c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+                        outputPgmFile(c, p, newWorld, turn)
+                        // Make sure that the Io has finished any output before exiting.
+                    	c.ioCommand <- ioCheckIdle
+                    	<-c.ioIdle
                         os.Exit(0)
                     }
 				default:
