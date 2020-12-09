@@ -1,7 +1,7 @@
 package gol
 
 import (
-	"fmt"
+	//"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -86,7 +86,7 @@ func (io *ioState) writePgmImage() {
 	ioError = file.Sync()
 	util.Check(ioError)
 
-	fmt.Println("File", filename, "output done!")
+	//fmt.Println("File", filename, "output done!")
 	//should we send an ImageOutputComplete event?
 
 }
