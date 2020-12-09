@@ -169,6 +169,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
                 } else if key == 'k' {
+                    tk.Stop()
                     var x, reply int
                     client.Call("Engine.QuitAll", x, &reply)
                     outputPgmFile(d, p, data.World, turn)
