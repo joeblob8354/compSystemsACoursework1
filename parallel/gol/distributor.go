@@ -1,10 +1,11 @@
 package gol
 
 import (
-	"uk.ac.bris.cs/gameoflife/util"
+	"fmt"
+	"os"
 	"strconv"
-//	"fmt"
-    "os"
+
+	"uk.ac.bris.cs/gameoflife/util"
 )
 
 //all channels distributor has access to
@@ -18,19 +19,19 @@ type distributorChannels struct {
 }
 
 //Outputs a program file of the world state.
-func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) {
+func outputPgmFile(d distributorChannels, p Params, world [][]byte, turn int) {
 
-    //send command to io to let make it execute the writePgmImage() function.
-    d.ioCommand <- 0
-    //send the filename to the writePgmImage() function.
-    d.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(turn))
+	//send command to io to let make it execute the writePgmImage() function.
+	d.ioCommand <- 0
+	//send the filename to the writePgmImage() function.
+	d.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(turn))
 
-    //Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
-    for currRow := 0; currRow < p.ImageHeight; currRow++ {
-        for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-            d.ioOutput <- world[currRow][currColumn]
-        }
-    }
+	//Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
+	for currRow := 0; currRow < p.ImageHeight; currRow++ {
+		for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
+			d.ioOutput <- world[currRow][currColumn]
+		}
+	}
 }
 
 //finds a cells neighbours and increments amount if the neighbour is alive
@@ -118,7 +119,6 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 	return aliveCells
 }
 
-
 // distributor divides the work between workers and interacts with other goroutines.
 func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive chan Event, tickerAvail chan bool, k <-chan rune) {
 
@@ -135,7 +135,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 	//reads in bytes 1 at a time from the ioInput channel and populates the world
 	for currRow := 0; currRow < p.ImageHeight; currRow++ {
 		for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
-			newWorld[currRow][currColumn] = <-c.ioInput 
+			newWorld[currRow][currColumn] = <-c.ioInput
 		}
 	}
 	//sets start turn to 0.
@@ -155,7 +155,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 
 	//notifies the ticker that the events channel is open
 	isClosed <- false
-	
+
 	//sets number of sections == to number of threads (workers).
 	numberOfSections := p.Threads
 	//sets the height of each section to be an equal proportion of total height.
@@ -168,7 +168,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 	}
 
 	//Execute all turns of the Game of Life.
-	for turn = 0; turn < p.Turns; turn++ { 
+	for turn = 0; turn < p.Turns; turn++ {
 
 		//if numberOfSections == 1 start just 1 worker routine to handle the entire world
 		if numberOfSections == 1 {
@@ -182,32 +182,39 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 			go calculateNextState(p, (numberOfSections-1)*heightOfSection, p.ImageHeight, newWorld, turn, c, chanSlice[numberOfSections-1])
 		}
 
-        var key rune
+		var key rune
 		//sends the number of alive cells to the ticker
 		if turn > 0 {
 			select {
-				case <-tickerAvail:
-					alive := calculateAliveCells(p, newWorld)
-					sendAlive <- AliveCellsCount{CompletedTurns: turn, CellsCount: len(alive)}
-			    case key = <- k:
-                    //if s is pressed output a pgm img of the current world state and the corresponding turn.
-                    if key == 's' {
-                        outputPgmFile(c, p, newWorld, turn)
-                    // if q is pressed, change state to quitting and exit.
-                    } else if key == 'q' {
-                        c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
-                        outputPgmFile(c, p, newWorld, turn)
-                        // Make sure that the Io has finished any output before exiting.
-                    	c.ioCommand <- ioCheckIdle
-                    	<-c.ioIdle
-                        os.Exit(0)
-                    }
-				default:
+			case <-tickerAvail:
+				alive := calculateAliveCells(p, newWorld)
+				sendAlive <- AliveCellsCount{CompletedTurns: turn, CellsCount: len(alive)}
+			case key = <-k:
+				//if s is pressed output a pgm img of the current world state and the corresponding turn.
+				if key == 's' {
+					outputPgmFile(c, p, newWorld, turn)
+					// if q is pressed, change state to quitting and exit.
+				} else if key == 'q' {
+					c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+					outputPgmFile(c, p, newWorld, turn)
+					// Make sure that the Io has finished any output before exiting.
+					c.ioCommand <- ioCheckIdle
+					<-c.ioIdle
+					os.Exit(0)
+				} else if key == 'p' {
+					fmt.Println(turn)
+					key = <-k
+					fmt.Println("Continuing")
+					for key != 'p' {
+						key = <-k
+					}
+				}
+			default:
 
 			}
-			
+
 		}
-		
+
 		//reset world state
 		newWorld = nil
 
@@ -216,7 +223,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 			part := <-chanSlice[section]
 			newWorld = append(newWorld, part...)
 		}
-		
+
 		//sends an event to say the turn is complete
 		c.events <- TurnComplete{CompletedTurns: turn}
 	}
@@ -236,10 +243,10 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 			c.ioOutput <- newWorld[currRow][currColumn]
 		}
 	}
-	
+
 	// Make sure that the Io has finished any output before exiting.
-	c.ioCommand <- ioCheckIdle 
-	<-c.ioIdle 
+	c.ioCommand <- ioCheckIdle
+	<-c.ioIdle
 
 	//updates state to quitting
 	c.events <- StateChange{turn, Quitting}
