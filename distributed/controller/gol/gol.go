@@ -173,6 +173,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     var x, reply int
                     client.Call("Engine.QuitAll", x, &reply)
                     outputPgmFile(d, p, data.World, turn)
+                    os.Exit(0)
                 }
             //otherwise, do nothing and continue to next turn
             default:
