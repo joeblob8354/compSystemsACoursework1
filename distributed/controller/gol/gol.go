@@ -168,6 +168,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                 } else if key == 'q' {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
+                //if k is pressed close all elements of system, starting with worker nodes, then master node
                 } else if key == 'k' {
                     tk.Stop()
                     var x, reply int
