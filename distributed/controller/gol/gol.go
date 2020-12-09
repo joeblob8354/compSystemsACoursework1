@@ -151,7 +151,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                 //if s is pressed output a pgm img of the current world state and the corresponding turn.
                 if key == 's' {
                     verify := outputPgmFile(d, p, data.World, turn)
-                    for verify != true {}
+                    for verify != 4 {}
 
                 //if p is pressed, change state to paused, stop the ticker, and wait for p to be pressed again before continuing.
                 } else if key == 'p' {
@@ -173,9 +173,9 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     tk.Stop()
                     var x, reply int
                     client.Call("Engine.QuitAll", x, &reply)
-                    verify := false
+                    verify := 3
                     verify = outputPgmFile(d, p, data.World, turn)
-                    for verify != true {}
+                    for verify != 4 {}
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
                 }
@@ -193,7 +193,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
 
     //outputs pgm file
     verify := outputPgmFile(d, p, data.World, turn)
-    for verify != true {}
+    for verify != 4 {}
 
     // Make sure that the Io has finished any output before exiting.
  	d.ioCommand <- ioCheckIdle
@@ -229,7 +229,7 @@ func ticker(tk *time.Ticker, cellCount *int, turn *int, d distributorChannels, p
 }
 
 //Outputs a program file of the world state.
-func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) bool {
+func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) int {
 
     //send command to io to let make it execute the writePgmImage() function.
     d.ioCommand <- 0
@@ -242,7 +242,7 @@ func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) b
             d.ioOutput <- world[currRow][currColumn]
         }
     }
-    return true
+    return 4
 }
 
 //create necessary channels and start go routines.
