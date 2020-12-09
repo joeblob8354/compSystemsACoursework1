@@ -209,7 +209,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
         var key rune
         //listening for incoming key-presses without blocking
         select {
-            case key = <- k
+            case key = <- k:
                 //if s is pressed output a pgm img of the current world state and the corresponding turn.
                 if key == 's' {
                     outputPgmFile(c, p, newWorld, turn)
