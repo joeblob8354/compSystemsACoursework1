@@ -120,7 +120,7 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 
 
 // distributor divides the work between workers and interacts with other goroutines.
-func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive chan Event, tickerAvail chan bool) {
+func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive chan Event, tickerAvail chan bool, k <-chan rune) {
 
 	//Creates a 2D slice to store the world.
 	newWorld := make([][]byte, p.ImageHeight)
@@ -209,7 +209,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
         var key rune
         //listening for incoming key-presses without blocking
         select {
-            case key = <- k:
+            case key = <- k
                 //if s is pressed output a pgm img of the current world state and the corresponding turn.
                 if key == 's' {
                     outputPgmFile(c, p, newWorld, turn)
