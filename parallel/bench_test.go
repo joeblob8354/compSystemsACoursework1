@@ -10,7 +10,7 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
     p.ImageHeight = 64
     p.ImageWidth = 64
     p.Turns = 10000
-    for n := 0; n < b.N; n++ {
+    for n := 0; n < 3; n++ {
         events := make(chan gol.Event)
         gol.Run(p, events, nil)
         var turn int
