@@ -7,7 +7,7 @@ import (
 var p gol.Params
 
 func benchmarkParallel(p gol.Params, b *testing.B) {
-    for n := 0; n < 10; n++ {
+    for n := 0; n < b.N; n++ {
         events := make(chan gol.Event)
         gol.Run(p, events, nil)
         var turn int
@@ -28,5 +28,4 @@ func BenchmarkParallel(b *testing.B) {
     p.Turns = 1000
     p.Threads = 1
     benchmarkParallel(p, b)
-
 }
