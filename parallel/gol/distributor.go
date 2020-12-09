@@ -206,6 +206,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 		//sends an event to say the turn is complete
 		c.events <- TurnComplete{CompletedTurns: turn}
 
+        var key rune
         //listening for incoming key-presses without blocking
         select {
             case key = <- k:
@@ -216,7 +217,6 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
                 } else if key == 'q' {
                     c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
-                //if k is pressed close all elements of system, starting with worker nodes, then master node
                 }
         }
 	}
