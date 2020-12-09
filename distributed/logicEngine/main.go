@@ -9,6 +9,7 @@ import (
 	"net/rpc"
 	"net"
 	"log"
+	"os"
 )
 
 type Data struct {
@@ -203,7 +204,7 @@ func (e* Engine) QuitAll(x int, reply *int) error {
         if err != nil {
             log.Fatal("Failed to connect to node ", node, " ", err)
         }
-        var x, reply ini
+        var x, reply int
         listOfNodes[node].Call("Engine.QuitNode", x, &reply)
     }
     os.Exit(0)
@@ -213,7 +214,6 @@ func (e* Engine) QuitAll(x int, reply *int) error {
 func (e* Engine) QuitNode(x int, reply *int) {
 
     os.Exit(0)
-    return nil
 }
 
 // main is the function called when starting Game of Life with 'go run .'

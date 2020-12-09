@@ -172,6 +172,7 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     var x, reply int int
                     client.Call("Engine.QuitAll", x, &reply)
+                    outputPgmFile(d, p, data.World, turn)
                 }
             //otherwise, do nothing and continue to next turn
             default:
