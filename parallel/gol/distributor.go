@@ -183,12 +183,22 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 			go calculateNextState(p, (numberOfSections-1)*heightOfSection, p.ImageHeight, newWorld, turn, c, chanSlice[numberOfSections-1])
 		}
 
+        var key rune
 		//sends the number of alive cells to the ticker
 		if turn > 0 {
 			select {
 				case <-tickerAvail:
 					alive := calculateAliveCells(p, newWorld)
 					sendAlive <- AliveCellsCount{CompletedTurns: turn, CellsCount: len(alive)}
+			    case key = <- k:
+                    //if s is pressed output a pgm img of the current world state and the corresponding turn.
+                    if key == 's' {
+                        outputPgmFile(c, p, newWorld, turn)
+                    // if q is pressed, change state to quitting and exit.
+                    } else if key == 'q' {
+                        c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+                        os.Exit(0)
+                    }
 				default:
 
 			}
@@ -206,20 +216,6 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 		
 		//sends an event to say the turn is complete
 		c.events <- TurnComplete{CompletedTurns: turn}
-
-        /*var key rune
-        //listening for incoming key-presses without blocking
-        select {
-            case key = <- k:
-                //if s is pressed output a pgm img of the current world state and the corresponding turn.
-                if key == 's' {
-                    outputPgmFile(c, p, newWorld, turn)
-                // if q is pressed, change state to quitting and exit.
-                } else if key == 'q' {
-                    c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
-                    os.Exit(0)
-                }
-        }*/
 	}
 
 	//send array of alive cells for testing
