@@ -211,9 +211,10 @@ func (e* Engine) QuitAll(x int, reply *int) error {
     return nil
 }
 
-func (e* Engine) QuitNode(x int, reply *int) {
+func (e* Engine) QuitNode(x int, reply *int) error {
 
     os.Exit(0)
+    return nil
 }
 
 // main is the function called when starting Game of Life with 'go run .'
