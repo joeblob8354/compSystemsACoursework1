@@ -14,8 +14,8 @@ func benchmarkParallel(benchName string, p gol.Params, b *testing.B) {
 }
 
 func BenchmarkParallel(b *testing.B) {
-    p.ImageHeight = 16
-    p.ImageWidth = 16
+    p.ImageHeight = 512
+    p.ImageWidth = 512
     p.Turns = 1000
     for p.Threads = 1; p.Threads <= 16; p.Threads++ {
         benchName := strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(p.Turns) + "-" + strconv.Itoa(p.Threads)
