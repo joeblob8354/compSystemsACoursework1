@@ -31,7 +31,6 @@ func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
 		ioOutput,
 	}
 
-    keyPresses := make(chan rune, 10)
 	//used for sending the number of alive cells from the distributor to the ticker
 	sendAlive := make(chan Event)
 	//used for notifiying the ticker function about whether events is open or not
