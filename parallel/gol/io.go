@@ -124,7 +124,7 @@ func (io *ioState) readPgmImage() {
 		io.channels.input <- b
 	}
 
-	fmt.Println("File", filename, "input done!")
+	//fmt.Println("File", filename, "input done!")
 	
 }
 
