@@ -43,8 +43,9 @@ func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
 	isClosed := make(chan bool)
 	//used in the distributor function in the select statement to avoid blocking
 	tickerAvail := make(chan bool)
+	tickerKeyControl := make(chan bool)
 
-	go distributor(p, distributorChannels, isClosed, sendAlive, tickerAvail, keyPresses)
+	go distributor(p, distributorChannels, isClosed, sendAlive, tickerAvail, keyPresses, tickerKeyControl)
 	//receive the number of alive cells every 2 seconds while the events channel is open, stop the goroutine when the channel is closed
 	ticker := time.NewTicker(2 * time.Second)
 	go func() {
@@ -58,6 +59,17 @@ func Run(p Params, events chan<- Event, keyPresses <-chan rune) {
 					tickerAvail <- true
 					send := <-sendAlive
 					events <- send 
+				case pause := <-tickerKeyControl:
+					if pause == true {
+						for {
+						if pause {
+							pause = <-tickerKeyControl
+							} else {
+								break
+							}
+						
+						}	
+					}
 				default:
 					
 			} 

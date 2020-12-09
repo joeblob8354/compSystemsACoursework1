@@ -120,7 +120,7 @@ func calculateAliveCells(p Params, world [][]byte) []util.Cell {
 }
 
 // distributor divides the work between workers and interacts with other goroutines.
-func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive chan Event, tickerAvail chan bool, k <-chan rune) {
+func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive chan Event, tickerAvail chan bool, k <-chan rune, tickerKeyControl chan bool) {
 
 	//Creates a 2D slice to store the world.
 	newWorld := make([][]byte, p.ImageHeight)
@@ -202,15 +202,17 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 					<-c.ioIdle
 					os.Exit(0)
 				} else if key == 'p' {
-					c.events <- StateChange{CompletedTurns: turn, NewState: Paused}
+					fmt.Println(turn)
+					tickerKeyControl <- true
 					key = <-k
+					tickerKeyControl <- false
+					fmt.Println("Continuing")
 					for key != 'p' {
 						key = <-k
 					}
-					fmt.Println("Continuing")
-					c.events <- StateChange{CompletedTurns: turn, NewState: Executing}
 				}
 			default:
+
 			}
 
 		}
