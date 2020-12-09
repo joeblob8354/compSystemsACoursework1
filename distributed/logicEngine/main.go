@@ -189,6 +189,32 @@ func (e* Engine) GetAvailableNodes(x int, reply *int) error {
     return nil
 }
 
+func (e* Engine) QuitAll(x int, reply *int) error {
+
+    for numberOfWorkers := 0; numberOfWorkers < len(nodeAddresses); numberOfWorkers++ {
+        var client *rpc.Client
+        listOfNodes = append(listOfNodes, client)
+    }
+
+    for node := 0; node < len(nodeAddresses); node++ {
+        var err error
+        listOfNodes[node], err = rpc.Dial("tcp", nodeAddresses[node])
+        if err != nil {
+            log.Fatal("Failed to connect to node ", node, " ", err)
+        }
+        var x, reply int int
+        listOfNodes[node].Call("Engine.QuitNode", x, &reply)
+    }
+    os.Exit(0)
+    return nil
+}
+
+func (e* Engine) QuitNode(x int, reply *int) {
+
+    os.Exit(0)
+    return nil
+}
+
 // main is the function called when starting Game of Life with 'go run .'
 func main() {
 	runtime.LockOSThread()

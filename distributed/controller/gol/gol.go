@@ -168,6 +168,10 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
                 } else if key == 'q' {
                     d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
                     os.Exit(0)
+                } else if key == 'k' {
+                    d.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+                    var x, reply int int
+                    client.Call("Engine.QuitAll", x, &reply)
                 }
             //otherwise, do nothing and continue to next turn
             default:
