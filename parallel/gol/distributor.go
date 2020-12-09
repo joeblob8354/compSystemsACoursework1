@@ -17,6 +17,22 @@ type distributorChannels struct {
 	ioOutput   chan<- uint8
 }
 
+//Outputs a program file of the world state.
+func outputPgmFile (d distributorChannels, p Params, world [][]byte, turn int) {
+
+    //send command to io to let make it execute the writePgmImage() function.
+    d.ioCommand <- 0
+    //send the filename to the writePgmImage() function.
+    d.ioFilename <- (strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(turn))
+
+    //Scan across the updated world and send bytes 1 at a time to the writePgmImage() function via the ioOutput channel.
+    for currRow := 0; currRow < p.ImageHeight; currRow++ {
+        for currColumn := 0; currColumn < p.ImageWidth; currColumn++ {
+            d.ioOutput <- world[currRow][currColumn]
+        }
+    }
+}
+
 //finds a cells neighbours and increments amount if the neighbour is alive
 func findNeighbour(cellColumn int, cellRow int, rowChange int, columnChange int, world [][]byte, p Params, amount int) int {
 	newRow := cellRow + rowChange
@@ -189,7 +205,32 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 		
 		//sends an event to say the turn is complete
 		c.events <- TurnComplete{CompletedTurns: turn}
-		
+
+        //listening for incoming key-presses without blocking
+        select {
+            case key = <- k:
+                //if s is pressed output a pgm img of the current world state and the corresponding turn.
+                if key == 's' {
+                    outputPgmFile(c, p, newWorld, turn)
+
+                //if p is pressed, change state to paused, stop the ticker, and wait for p to be pressed again before continuing.
+                } /*else if key == 'p' {
+                    c.events <- StateChange{CompletedTurns: turn, NewState: Paused}
+                    tk.Stop()
+                    key = <- k
+                    for key != 'p' {
+                        key = <- k
+                    }
+                    //change state to executing and restart the ticker
+                    d.events <- StateChange{CompletedTurns: turn, NewState: Executing}
+                    tk = time.NewTicker(time.Second*2)
+                    go ticker(tk, &cellCount, &turn, d, p)
+                // if q is pressed, change state to quitting and exit.
+                }*/ else if key == 'q' {
+                    c.events <- StateChange{CompletedTurns: turn, NewState: Quitting}
+                    os.Exit(0)
+                //if k is pressed close all elements of system, starting with worker nodes, then master node
+                }
 	}
 
 	//send array of alive cells for testing
