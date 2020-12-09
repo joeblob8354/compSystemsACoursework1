@@ -218,6 +218,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
                     os.Exit(0)
                 //if k is pressed close all elements of system, starting with worker nodes, then master node
                 }
+        }
 	}
 
 	//send array of alive cells for testing
