@@ -202,7 +202,6 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 					<-c.ioIdle
 					os.Exit(0)
 				} else if key == 'p' {
-				    isClosed <- true
 					c.events <- StateChange{CompletedTurns: turn, NewState: Paused}
 					key = <-k
 					fmt.Println("Continuing")
@@ -210,7 +209,6 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 						key = <-k
 					}
 					c.events <- StateChange{CompletedTurns: turn, NewState: Executing}
-					isClosed <- false
 				}
 			default:
 			}
