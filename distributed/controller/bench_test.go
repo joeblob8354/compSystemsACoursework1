@@ -44,7 +44,7 @@ func BenchmarkParallel4(b *testing.B) {
     p.Threads = 4
     benchmarkParallel(p, b)
 }
-
+/*
 func BenchmarkParallel5(b *testing.B) {
     p.Threads = 5
     benchmarkParallel(p, b)
