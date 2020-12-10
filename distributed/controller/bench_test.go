@@ -48,18 +48,18 @@ func BenchmarkParallel4(b *testing.B) {
 func BenchmarkParallel5(b *testing.B) {
     p.Threads = 5
     benchmarkParallel(p, b)
-}*/
+}
 
 func BenchmarkParallel6(b *testing.B) {
     p.Threads = 6
     benchmarkParallel(p, b)
-}
-/*
+}*/
+
 func BenchmarkParallel7(b *testing.B) {
     p.Threads = 7
     benchmarkParallel(p, b)
 }
-
+/*
 func BenchmarkParallel8(b *testing.B) {
     p.Threads = 8
     benchmarkParallel(p, b)
