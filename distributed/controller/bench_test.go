@@ -3,6 +3,7 @@ package main
 import (
         "testing"
         "uk.ac.bris.cs/gameoflife/gol"
+        "time"
         )
 var p gol.Params
 
@@ -23,6 +24,7 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
             }
         }
     }
+    time.Sleep(5*time.Second)
 }
 
 func BenchmarkParallel1(b *testing.B) {
