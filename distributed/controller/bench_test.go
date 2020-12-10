@@ -24,7 +24,6 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
             }
         }
     }
-    time.Sleep(5*time.Second)
 }
 
 func BenchmarkParallel1(b *testing.B) {
