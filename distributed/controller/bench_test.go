@@ -9,7 +9,7 @@ var p gol.Params
 func benchmarkParallel(p gol.Params, b *testing.B) {
     p.ImageHeight = 16
     p.ImageWidth = 16
-    p.Turns = 100
+    p.Turns = 250
     for n := 0; n < b.N; n++ {
         events := make(chan gol.Event)
         gol.Run(p, events, nil)
@@ -24,12 +24,12 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
         }
     }
 }
-/*
+
 func BenchmarkParallel1(b *testing.B) {
     p.Threads = 1
     benchmarkParallel(p, b)
 }
-
+/*
 func BenchmarkParallel2(b *testing.B) {
     p.Threads = 2
     benchmarkParallel(p, b)
@@ -58,13 +58,13 @@ func BenchmarkParallel6(b *testing.B) {
 func BenchmarkParallel7(b *testing.B) {
     p.Threads = 7
     benchmarkParallel(p, b)
-}*/
+}
 
 func BenchmarkParallel8(b *testing.B) {
     p.Threads = 8
     benchmarkParallel(p, b)
 }
-/*
+
 func BenchmarkParallel9(b *testing.B) {
     p.Threads = 9
     benchmarkParallel(p, b)
