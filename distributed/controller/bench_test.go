@@ -16,7 +16,6 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
         for event := range events {
             switch e := event.(type) {
         	case gol.ImageOutputComplete:
-        	    turn = e.CompletedTurns
             }
         }
     }
