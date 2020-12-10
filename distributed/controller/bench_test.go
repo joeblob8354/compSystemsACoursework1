@@ -18,6 +18,7 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
                 for event != gol.ImageOutputComplete {
                     event = <- events
                 }
+        }
     }
 }
 
