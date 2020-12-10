@@ -74,7 +74,6 @@ func (io *ioState) writePgmImage() {
 		}
 	}
 
-	//is this writing out the file? do we need to add anything more?
 	for y := 0; y < io.params.ImageHeight; y++ {
 		for x := 0; x < io.params.ImageWidth; x++ {
 			_, ioError = file.Write([]byte{world[y][x]})
@@ -87,7 +86,6 @@ func (io *ioState) writePgmImage() {
 	util.Check(ioError)
 
 	//fmt.Println("File", filename, "output done!")
-	//should we send an ImageOutputComplete event?
 
 }
 
