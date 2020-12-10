@@ -133,6 +133,12 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
         globalTurn = 0
         globalWorld = nil
     }
+
+    //close all the worker connections
+    for node := 0; node < numberOfNodes; node++ {
+        listOfNodes[node].Close()
+    }
+
     return nil
 }
 

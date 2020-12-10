@@ -188,6 +188,9 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
     //stops ticker
     tk.Stop()
 
+    //closes the client connection
+    client.Close()
+
     //send array of alive cells for testing
     aliveCells := calculateAliveCells(p, data.World)
     d.events <- FinalTurnComplete{CompletedTurns: p.Turns, Alive: aliveCells}
