@@ -26,7 +26,7 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
 }
 
 func BenchmarkParallel1(b *testing.B) {
-    p.Threads = 1
+    p.Threads = 2
     benchmarkParallel(p, b)
 }
 /*
