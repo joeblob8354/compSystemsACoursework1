@@ -29,12 +29,12 @@ func BenchmarkParallel1(b *testing.B) {
     p.Threads = 1
     benchmarkParallel(p, b)
 }
-/*
+
 func BenchmarkParallel2(b *testing.B) {
     p.Threads = 2
     benchmarkParallel(p, b)
 }
-
+/*
 func BenchmarkParallel3(b *testing.B) {
     p.Threads = 3
     benchmarkParallel(p, b)
