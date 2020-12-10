@@ -85,7 +85,7 @@ func (io *ioState) writePgmImage() {
 	ioError = file.Sync()
 	util.Check(ioError)
 
-	//fmt.Println("File", filename, "output done!")
+	fmt.Println("File", filename, "output done!")
 
 }
 
@@ -122,7 +122,7 @@ func (io *ioState) readPgmImage() {
 		io.channels.input <- b
 	}
 
-	//fmt.Println("File", filename, "input done!")
+	fmt.Println("File", filename, "input done!")
 	
 }
 
