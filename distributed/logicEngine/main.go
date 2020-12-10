@@ -2,10 +2,8 @@ package main
 
 import (
 	"flag"
-	//"fmt"
 	"runtime"
 	"uk.ac.bris.cs/gameoflife/gol"
-	//"uk.ac.bris.cs/gameoflife/sdl"
 	"net/rpc"
 	"net"
 	"log"
@@ -138,6 +136,7 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     return nil
 }
 
+//connects to the worker node with a .Call, sends the connection pointer to the out channel
 func call(node int, workerData WorkerData, listOfNodes []*rpc.Client, workerReplies [][][]byte, out chan<- [][]byte) {
 
     listOfNodes[node].Call("Engine.RunWorker", workerData, &workerReplies[node])
@@ -190,6 +189,7 @@ func (e* Engine) GetAvailableNodes(x int, reply *int) error {
     return nil
 }
 
+//Quits all worker nodes one by one before quitting the master node
 func (e* Engine) QuitAll(x int, reply *int) error {
 
     listOfNodes := []*rpc.Client{}
@@ -211,6 +211,7 @@ func (e* Engine) QuitAll(x int, reply *int) error {
     return nil
 }
 
+//Quits the node
 func (e* Engine) QuitNode(x int, reply *int) error {
 
     os.Exit(0)
