@@ -13,11 +13,11 @@ func benchmarkParallel(p gol.Params, b *testing.B) {
     for n := 0; n < b.N; n++ {
         events := make(chan gol.Event)
         gol.Run(p, events, nil)
-        for event := range events {
-            select {
-        	case gol.ImageOutputComplete:
-        	}
-        }
+        select {
+            case event := <-events:
+                for event != gol.ImageOutputComplete {
+                    event = <- events
+                }
     }
 }
 
