@@ -205,10 +205,10 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 					c.events <- StateChange{CompletedTurns: turn, NewState: Paused}
 					tickerKeyControl <- true
 					key = <-k
-					tickerKeyControl <- false
 					for key != 'p' {
 						key = <-k
 					}
+					tickerKeyControl <- false
 					StateChange{CompletedTurns: turn, NewState: Executing}
 					fmt.Println("Continuing")
 				}
