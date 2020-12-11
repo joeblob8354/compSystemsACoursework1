@@ -202,8 +202,6 @@ func engine(p Params, d distributorChannels, k <-chan rune) {
  	d.ioCommand <- ioCheckIdle
  	<-d.ioIdle
 
- 	d.events <- ImageOutputComplete{CompletedTurns: turn, Filename: strconv.Itoa(p.ImageHeight) + "x" + strconv.Itoa(p.ImageWidth) + "x" + strconv.Itoa(turn)}
-
     //close events channel
     close(d.events)
 }
