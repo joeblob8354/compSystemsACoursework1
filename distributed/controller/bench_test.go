@@ -9,7 +9,7 @@ var p gol.Params
 func benchmarkDistributed(p gol.Params, b *testing.B) {
     p.ImageHeight = 512
     p.ImageWidth = 512
-    p.Turns = 100
+    p.Turns = 200
     for n := 0; n < b.N; n++ {
         events := make(chan gol.Event)
         gol.Run(p, events, nil)
@@ -26,17 +26,17 @@ func benchmarkDistributed(p gol.Params, b *testing.B) {
 }
 
 func BenchmarkDistributed1(b *testing.B) {
-    p.Threads = 7
+    p.Threads = 1
     benchmarkDistributed(p, b)
 }
 
 func BenchmarkDistributed2(b *testing.B) {
-    p.Threads = 8
+    p.Threads = 2
     benchmarkDistributed(p, b)
 }
-/*
+
 func BenchmarkDistributed3(b *testing.B) {
-    p.Threads = 6
+    p.Threads = 3
     benchmarkDistributed(p, b)
 }/*
 
