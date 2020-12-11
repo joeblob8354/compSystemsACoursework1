@@ -202,7 +202,7 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 					<-c.ioIdle
 					os.Exit(0)
 				} else if key == 'p' {
-					fmt.Println(turn)
+					c.events <- StateChange{CompletedTurns: turn, NewState: Paused}
 					tickerKeyControl <- true
 					key = <-k
 					tickerKeyControl <- false
