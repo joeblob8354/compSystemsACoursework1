@@ -26,7 +26,7 @@ func benchmarkDistributed(p gol.Params, b *testing.B) {
 }
 
 func BenchmarkDistributed1(b *testing.B) {
-    p.Threads = 1
+    p.Threads = 5
     benchmarkDistributed(p, b)
 }
 
@@ -36,7 +36,7 @@ func BenchmarkDistributed2(b *testing.B) {
 }
 
 func BenchmarkDistributed3(b *testing.B) {
-    p.Threads = 3
+    p.Threads = 6
     benchmarkDistributed(p, b)
 }/*
 
