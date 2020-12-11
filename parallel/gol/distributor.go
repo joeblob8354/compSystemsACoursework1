@@ -206,10 +206,11 @@ func distributor(p Params, c distributorChannels, isClosed chan bool, sendAlive 
 					tickerKeyControl <- true
 					key = <-k
 					tickerKeyControl <- false
-					fmt.Println("Continuing")
 					for key != 'p' {
 						key = <-k
 					}
+					StateChange{CompletedTurns: turn, NewState: Executing}
+					fmt.Println("Continuing")
 				}
 			default:
 
