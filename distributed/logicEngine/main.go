@@ -121,6 +121,11 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     	    part := <-chanSlice[node]
     		globalWorld = append(globalWorld, part...)
     	}
+
+    	//close all the worker connections
+        for node := 0; node < numberOfNodes; node++ {
+            listOfNodes[node].Close()
+        }
     }
 
     //update the global turn
@@ -132,11 +137,6 @@ func (e *Engine) RunMaster(data Data, reply *[][]byte) error {
     if globalTurn == data.TheParams.Turns - 1 {
         globalTurn = 0
         globalWorld = nil
-    }
-
-    //close all the worker connections
-    for node := 0; node < numberOfNodes; node++ {
-        listOfNodes[node].Close()
     }
 
     return nil
